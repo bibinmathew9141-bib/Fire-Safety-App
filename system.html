@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>System</title>
+  <title>Fire Safety System</title>
 
   <style>
     body {
@@ -26,7 +26,6 @@
 
     .tab {
       display: none;
-      margin-top: 20px;
     }
 
     .active {
@@ -35,9 +34,9 @@
 
     table {
       width: 100%;
-      border-collapse: collapse;
       background: white;
       color: black;
+      border-collapse: collapse;
     }
 
     th, td {
@@ -49,14 +48,12 @@
 
 <body>
 
-<h2 id="title">System</h2>
+<h2 id="title"></h2>
 
-<!-- MENU -->
 <button onclick="showTab('daily')">Daily Sheet</button>
-<button onclick="showTab('monthly')">Monthly Sheet</button>
-<button onclick="showTab('yearly')">Yearly Sheet</button>
+<button onclick="showTab('monthly')">Monthly</button>
+<button onclick="showTab('yearly')">Yearly</button>
 
-<!-- DAILY -->
 <div id="daily" class="tab active">
 
   <button onclick="addRow()">➕ Add Row</button>
@@ -75,25 +72,25 @@
 
 </div>
 
-<!-- MONTHLY -->
 <div id="monthly" class="tab">
-  <h3>Monthly Sheet (Coming next)</h3>
+  <h3>Monthly Sheet (Next Step)</h3>
 </div>
 
-<!-- YEARLY -->
 <div id="yearly" class="tab">
-  <h3>Yearly Sheet (Coming next)</h3>
+  <h3>Yearly Sheet (Next Step)</h3>
 </div>
-
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
 
-// SHOW TAB
-function showTab(tab) {
+// SAFE TITLE
+let mall = localStorage.getItem("mall") || "Mall";
+let system = localStorage.getItem("system") || "System";
 
+document.getElementById("title").innerText =
+  mall + " - " + system;
+
+// TABS
+function showTab(tab) {
   document.getElementById("daily").classList.remove("active");
   document.getElementById("monthly").classList.remove("active");
   document.getElementById("yearly").classList.remove("active");
@@ -101,81 +98,24 @@ function showTab(tab) {
   document.getElementById(tab).classList.add("active");
 }
 
-// TITLE
-let mall = localStorage.getItem("mall");
-let system = localStorage.getItem("system");
-
-document.getElementById("title").innerText =
-  mall + " - " + system;
-
-// FIREBASE CONFIG
-const firebaseConfig = {
-  apiKey: "AIzaSyCIbZZvMeMxO2kbHCkWunMIfDRgCz_OngE",
-  authDomain: "fire-safety-app-5b93f.firebaseapp.com",
-  projectId: "fire-safety-app-5b93f",
-  storageBucket: "fire-safety-app-5b93f.firebasestorage.app",
-  messagingSenderId: "641973984641",
-  appId: "1:641973984641:web:3829c7001573357c4a1c80"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// ADD ROW (CLEAN)
+// TEST ADD ROW (NO FIREBASE YET)
 function addRow() {
 
-  db.collection("records").add({
-    mall: mall,
-    system: system,
-    date: new Date().toISOString().split('T')[0],
-    tag: "",
-    location: "",
-    status: "",
-    remarks: "",
-    shift: ""
-  });
+  let table = document.getElementById("table");
+
+  let row = table.insertRow();
+
+  row.innerHTML = `
+    <td>${table.rows.length}</td>
+    <td>${new Date().toISOString().split('T')[0]}</td>
+    <td>Test Tag</td>
+    <td>Test Location</td>
+    <td>OK</td>
+    <td>Working</td>
+    <td>Day</td>
+  `;
 
 }
-
-// LOAD DATA
-db.collection("records")
-  .where("mall", "==", mall)
-  .where("system", "==", system)
-  .onSnapshot((snapshot) => {
-
-    let table = document.getElementById("table");
-
-    table.innerHTML = `
-      <tr>
-        <th>Sl No</th>
-        <th>Date</th>
-        <th>Tag</th>
-        <th>Location</th>
-        <th>Status</th>
-        <th>Remarks</th>
-        <th>Shift</th>
-      </tr>
-    `;
-
-    let i = 1;
-
-    snapshot.forEach(doc => {
-      let d = doc.data();
-
-      let row = table.insertRow();
-
-      row.innerHTML = `
-        <td>${i++}</td>
-        <td>${d.date}</td>
-        <td>${d.tag}</td>
-        <td>${d.location}</td>
-        <td>${d.status}</td>
-        <td>${d.remarks}</td>
-        <td>${d.shift}</td>
-      `;
-    });
-
-  });
 
 </script>
 
