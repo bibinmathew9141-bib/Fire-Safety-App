@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>System Data</title>
+  <title>System</title>
 
   <style>
     body {
@@ -16,7 +16,7 @@
     }
 
     button {
-      margin: 8px;
+      margin: 5px;
       padding: 10px;
       background: red;
       color: white;
@@ -24,10 +24,18 @@
       cursor: pointer;
     }
 
+    .tab {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .active {
+      display: block;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
       background: white;
       color: black;
     }
@@ -41,36 +49,66 @@
 
 <body>
 
-<h2 id="title">Loading...</h2>
+<h2 id="title">System</h2>
 
-<button onclick="addRow()">➕ Add Row</button>
+<!-- MENU -->
+<button onclick="showTab('daily')">Daily Sheet</button>
+<button onclick="showTab('monthly')">Monthly Sheet</button>
+<button onclick="showTab('yearly')">Yearly Sheet</button>
 
-<table id="table">
-  <tr>
-    <th>Sl No</th>
-    <th>Date</th>
-    <th>Tag</th>
-    <th>Location</th>
-    <th>Status</th>
-    <th>Remarks</th>
-    <th>Shift</th>
-  </tr>
-</table>
+<!-- DAILY -->
+<div id="daily" class="tab active">
 
-<!-- Firebase -->
+  <button onclick="addRow()">➕ Add Row</button>
+
+  <table id="table">
+    <tr>
+      <th>Sl No</th>
+      <th>Date</th>
+      <th>Tag</th>
+      <th>Location</th>
+      <th>Status</th>
+      <th>Remarks</th>
+      <th>Shift</th>
+    </tr>
+  </table>
+
+</div>
+
+<!-- MONTHLY -->
+<div id="monthly" class="tab">
+  <h3>Monthly Sheet (Coming next)</h3>
+</div>
+
+<!-- YEARLY -->
+<div id="yearly" class="tab">
+  <h3>Yearly Sheet (Coming next)</h3>
+</div>
+
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
 
+// SHOW TAB
+function showTab(tab) {
+
+  document.getElementById("daily").classList.remove("active");
+  document.getElementById("monthly").classList.remove("active");
+  document.getElementById("yearly").classList.remove("active");
+
+  document.getElementById(tab).classList.add("active");
+}
+
+// TITLE
 let mall = localStorage.getItem("mall");
 let system = localStorage.getItem("system");
 
-// Show title safely
 document.getElementById("title").innerText =
-  "🔥 " + (mall || "Mall") + " - " + (system || "System");
+  mall + " - " + system;
 
-// Firebase config (YOUR PROVIDED)
+// FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyCIbZZvMeMxO2kbHCkWunMIfDRgCz_OngE",
   authDomain: "fire-safety-app-5b93f.firebaseapp.com",
@@ -80,34 +118,26 @@ const firebaseConfig = {
   appId: "1:641973984641:web:3829c7001573357c4a1c80"
 };
 
-// INIT FIREBASE
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// 🔥 ADD DATA
+// ADD ROW (CLEAN)
 function addRow() {
 
-  let data = {
+  db.collection("records").add({
     mall: mall,
     system: system,
     date: new Date().toISOString().split('T')[0],
-    tag: "Test Tag",
-    location: "Test Location",
-    status: "OK",
-    remarks: "Working",
-    shift: "Day"
-  };
+    tag: "",
+    location: "",
+    status: "",
+    remarks: "",
+    shift: ""
+  });
 
-  db.collection("records").add(data)
-    .then(() => {
-      alert("Data Saved Successfully!");
-    })
-    .catch((error) => {
-      alert("Error: " + error);
-    });
 }
 
-// 🔥 REALTIME LOAD
+// LOAD DATA
 db.collection("records")
   .where("mall", "==", mall)
   .where("system", "==", system)
