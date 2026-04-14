@@ -1,3 +1,4 @@
+
 /* ================= NAVIGATION ================= */
 
 function openMall(m){
@@ -22,6 +23,7 @@ function initPage(){
 document.getElementById("mallHeader").innerText =
 localStorage.getItem("mall") || "Tamdeen Group";
 
+/* RESET TABLE */
 document.getElementById("dataTable").innerHTML=`
 <tr>
 <th>Sl</th>
@@ -41,11 +43,19 @@ buildColumnFilters();
 
 }
 
+/* ================= DATA KEY ================= */
+
+function getBaseKey(){
+return localStorage.getItem("mall") + "_data";
+}
+
 /* ================= MODE ================= */
 
 function getMode(){
 return localStorage.getItem("sheet") || "daily";
 }
+
+/* ================= APPLY MODE ================= */
 
 function applyMode(){
 
@@ -101,18 +111,18 @@ for(let i=1;i<t.rows.length;i++){
 
 let c=t.rows[i].cells;
 
-data.push([
-c[1].innerText,
-c[2].innerText,
-c[3].innerText,
-c[4].innerText,
-c[5].innerText,
-c[6].innerText
-]);
+data.push({
+date:c[1].innerText,
+tag:c[2].innerText,
+location:c[3].innerText,
+status:c[4].innerText,
+remarks:c[5].innerText,
+shift:c[6].innerText
+});
 
 }
 
-localStorage.setItem(getKey(),JSON.stringify(data));
+localStorage.setItem(getBaseKey(),JSON.stringify(data));
 
 }
 
@@ -121,7 +131,12 @@ localStorage.setItem(getKey(),JSON.stringify(data));
 function load(){
 
 let t=document.getElementById("dataTable");
-let data=JSON.parse(localStorage.getItem(getKey())||"[]");
+let data=JSON.parse(localStorage.getItem(getBaseKey())||"[]");
+
+let mode=getMode();
+
+/* DAILY VIEW */
+if(mode==="daily"){
 
 data.forEach((d,i)=>{
 
@@ -129,26 +144,74 @@ let r=t.insertRow();
 
 r.innerHTML=`
 <td>${i+1}</td>
-<td contenteditable>${d[0]}</td>
-<td contenteditable>${d[1]}</td>
-<td contenteditable>${d[2]}</td>
-<td contenteditable>${d[3]}</td>
-<td contenteditable>${d[4]}</td>
-<td contenteditable>${d[5]}</td>
+<td contenteditable>${d.date}</td>
+<td contenteditable>${d.tag}</td>
+<td contenteditable>${d.location}</td>
+<td contenteditable>${d.status}</td>
+<td contenteditable>${d.remarks}</td>
+<td contenteditable>${d.shift}</td>
 <td><button onclick="del(this)">X</button></td>
 `;
 
 });
 
+return;
 }
 
-/* ================= KEY ================= */
+/* MONTHLY + YEARLY VIEW */
+buildGrouped(data,mode);
 
-function getKey(){
-return localStorage.getItem("mall")+"_"+getMode();
 }
 
-/* ================= DATE ================= */
+/* ================= GROUP VIEW ================= */
+
+function buildGrouped(data,mode){
+
+let t=document.getElementById("dataTable");
+
+let title = (mode==="monthly") ? "Month" : "Year";
+
+t.innerHTML=`
+<tr>
+<th>Sl</th>
+<th>${title}</th>
+<th>Total Records</th>
+</tr>
+`;
+
+let map={};
+
+data.forEach(d=>{
+
+let dt=new Date(d.date);
+if(isNaN(dt)) return;
+
+let key =
+mode==="monthly"
+? dt.toLocaleString('en-US',{month:'short',year:'numeric'})
+: dt.getFullYear();
+
+map[key]=(map[key]||0)+1;
+
+});
+
+let i=1;
+
+for(let k in map){
+
+let r=t.insertRow();
+
+r.innerHTML=`
+<td>${i++}</td>
+<td>${k}</td>
+<td>${map[k]}</td>
+`;
+
+}
+
+}
+
+/* ================= DATE FORMAT ================= */
 
 function formatDate(d){
 let dt=new Date(d);
