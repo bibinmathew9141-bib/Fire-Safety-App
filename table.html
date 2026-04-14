@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Table</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="main-body" onload="loadData()">
+
+<h2 class="title">Fire Safety Data</h2>
+
+<div class="filter-box">
+    <input type="text" id="filter" placeholder="Filter (YYYY-MM or YYYY)" onkeyup="filterData()">
+    <button onclick="printPDF()">Print PDF</button>
+    <button onclick="addRow()">Add Row</button>
+</div>
+
+<div class="table-container">
+<table id="dataTable">
+
+<tr>
+    <th>Sl No</th>
+    <th>Date</th>
+    <th>Tag No./Name</th>
+    <th>Location</th>
+    <th>Status</th>
+    <th>Remarks</th>
+    <th>Shift</th>
+</tr>
+
+</table>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
