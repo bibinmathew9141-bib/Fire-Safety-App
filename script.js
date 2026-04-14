@@ -1,62 +1,127 @@
+/* ================= NAVIGATION ================= */
+
+function openMall(m){
+localStorage.setItem("mall",m);
+window.location="mall.html";
+}
+
+function openSystem(s){
+localStorage.setItem("system",s);
+window.location="sheet.html";
+}
+
+function openSheet(type){
+localStorage.setItem("sheet",type);
+location.reload();
+}
 
 /* ================= INIT ================= */
 
-function init(){
+function initPage(){
 
-document.getElementById("title").innerText =
-localStorage.getItem("mall")+" - "+localStorage.getItem("system");
+document.getElementById("mallHeader").innerText =
+localStorage.getItem("mall") || "Tamdeen Group";
 
-render();
+document.getElementById("dataTable").innerHTML=`
+<tr>
+<th>Sl</th>
+<th>Date</th>
+<th>Tag</th>
+<th>Location</th>
+<th>Status</th>
+<th>Remarks</th>
+<th>Shift</th>
+<th>Action</th>
+</tr>
+`;
+
+load();
 applyMode();
-}
+buildColumnFilters();
 
-/* ================= KEY ================= */
-
-function key(){
-return localStorage.getItem("mall")+"_"+localStorage.getItem("system");
 }
 
 /* ================= MODE ================= */
 
 function getMode(){
-return localStorage.getItem("mode") || "daily";
+return localStorage.getItem("sheet") || "daily";
 }
 
-function setMode(m){
-localStorage.setItem("mode",m);
-render();
-applyMode();
-}
-
-/* ================= DATA ================= */
-
-function getData(){
-return JSON.parse(localStorage.getItem(key()) || "[]");
-}
-
-function saveData(d){
-localStorage.setItem(key(),JSON.stringify(d));
-}
-
-/* ================= RENDER ================= */
-
-function render(){
+function applyMode(){
 
 let mode=getMode();
-let data=getData();
-let t=document.getElementById("table");
+let btn=document.getElementById("addBtn");
 
-t.innerHTML="";
+if(btn){
+btn.style.display = (mode==="daily") ? "inline-block" : "none";
+}
 
-/* DAILY */
-if(mode==="daily"){
+}
 
-t.innerHTML=`
-<tr>
-<th>Sl</th><th>Date</th><th>Tag</th>
-<th>Location</th><th>Status</th>
-<th>Remarks</th><th>Shift</th><th>Action</th>
-</tr>`;
+/* ================= ADD ROW ================= */
+
+function addRow(){
+
+if(getMode()!=="daily") return;
+
+let t=document.getElementById("dataTable");
+
+let r=t.insertRow();
+
+r.innerHTML=`
+<td>${t.rows.length-1}</td>
+<td contenteditable>${formatDate(new Date())}</td>
+<td contenteditable></td>
+<td contenteditable></td>
+<td contenteditable></td>
+<td contenteditable></td>
+<td contenteditable></td>
+<td><button onclick="del(this)">X</button></td>
+`;
+
+save();
+
+}
+
+/* ================= DELETE ================= */
+
+function del(btn){
+btn.parentElement.parentElement.remove();
+save();
+}
+
+/* ================= SAVE ================= */
+
+function save(){
+
+let t=document.getElementById("dataTable");
+let data=[];
+
+for(let i=1;i<t.rows.length;i++){
+
+let c=t.rows[i].cells;
+
+data.push([
+c[1].innerText,
+c[2].innerText,
+c[3].innerText,
+c[4].innerText,
+c[5].innerText,
+c[6].innerText
+]);
+
+}
+
+localStorage.setItem(getKey(),JSON.stringify(data));
+
+}
+
+/* ================= LOAD ================= */
+
+function load(){
+
+let t=document.getElementById("dataTable");
+let data=JSON.parse(localStorage.getItem(getKey())||"[]");
 
 data.forEach((d,i)=>{
 
@@ -64,119 +129,134 @@ let r=t.insertRow();
 
 r.innerHTML=`
 <td>${i+1}</td>
-<td contenteditable>${d.date}</td>
-<td contenteditable>${d.tag}</td>
-<td contenteditable>${d.location}</td>
-<td contenteditable>${d.status}</td>
-<td contenteditable>${d.remarks}</td>
-<td contenteditable>${d.shift}</td>
+<td contenteditable>${d[0]}</td>
+<td contenteditable>${d[1]}</td>
+<td contenteditable>${d[2]}</td>
+<td contenteditable>${d[3]}</td>
+<td contenteditable>${d[4]}</td>
+<td contenteditable>${d[5]}</td>
 <td><button onclick="del(this)">X</button></td>
 `;
 
 });
+
 }
 
-/* MONTHLY */
-if(mode==="monthly"){
+/* ================= KEY ================= */
 
-t.innerHTML=`
-<tr><th>Sl</th><th>Month</th><th>Total</th></tr>`;
-
-let map={};
-
-data.forEach(d=>{
-let dt=new Date(d.date);
-if(isNaN(dt)) return;
-
-let k = dt.toLocaleString('en-US',{month:'short',year:'numeric'});
-map[k]=(map[k]||0)+1;
-});
-
-let i=1;
-for(let k in map){
-t.insertRow().innerHTML=
-`<td>${i++}</td><td>${k}</td><td>${map[k]}</td>`;
-}
+function getKey(){
+return localStorage.getItem("mall")+"_"+getMode();
 }
 
-/* YEARLY */
-if(mode==="yearly"){
+/* ================= DATE ================= */
 
-t.innerHTML=`
-<tr><th>Sl</th><th>Year</th><th>Total</th></tr>`;
-
-let map={};
-
-data.forEach(d=>{
-let dt=new Date(d.date);
-if(isNaN(dt)) return;
-
-let y=dt.getFullYear();
-map[y]=(map[y]||0)+1;
-});
-
-let i=1;
-for(let y in map){
-t.insertRow().innerHTML=
-`<td>${i++}</td><td>${y}</td><td>${map[y]}</td>`;
-}
-}
+function formatDate(d){
+let dt=new Date(d);
+let day=String(dt.getDate()).padStart(2,'0');
+let mon=dt.toLocaleString('en-US',{month:'short'});
+let yr=String(dt.getFullYear()).slice(-2);
+return ${day}-${mon}-${yr};
 }
 
-/* ================= ADD ROW ================= */
+/* ================= COLUMN FILTERS (EXCEL STYLE) ================= */
 
-function addRow(){
+let filters={};
 
-let data=getData();
+function buildColumnFilters(){
 
-data.push({
-date:new Date().toLocaleDateString(),
-tag:"",
-location:"",
-status:"",
-remarks:"",
-shift:""
-});
+let table=document.getElementById("dataTable");
 
-saveData(data);
-render();
+let old=document.getElementById("filterRow");
+if(old) old.remove();
+
+let row=table.insertRow(1);
+row.id="filterRow";
+
+let cols=table.rows[0].cells.length;
+
+for(let i=0;i<cols;i++){
+
+let cell=row.insertCell(i);
+
+if(i===0 || i===cols-1){
+cell.innerHTML="";
+continue;
 }
 
-/* ================= DELETE ================= */
+let input=document.createElement("input");
+input.placeholder="Filter";
+input.style.width="90%";
+input.style.fontSize="12px";
 
-function del(btn){
+input.oninput=function(){
+filters[i]=this.value.toLowerCase();
+applyFilters();
+};
 
-let i=btn.parentElement.parentElement.rowIndex-1;
-let data=getData();
-data.splice(i,1);
+cell.appendChild(input);
 
-saveData(data);
-render();
 }
 
-/* ================= MODE UI ================= */
+}
 
-function applyMode(){
+function applyFilters(){
 
-let btn=document.getElementById("addBtn");
-if(!btn) return;
+let table=document.getElementById("dataTable");
 
-btn.style.display = (getMode()==="daily") ? "inline-block" : "none";
+for(let i=2;i<table.rows.length;i++){
+
+let row=table.rows[i];
+let show=true;
+
+for(let col in filters){
+
+let val=filters[col];
+if(!val) continue;
+
+let cell=row.cells[col];
+if(!cell) continue;
+
+if(!cell.innerText.toLowerCase().includes(val)){
+show=false;
+break;
+}
+
+}
+
+row.style.display=show?"":"none";
+
+}
+
 }
 
 /* ================= EXPORT ================= */
 
-function exportCSV(){
+function exportExcel(){
 
-let data=getData();
-let csv="Tamdeen Group\n";
+let t=document.getElementById("dataTable");
+let csv="Tamdeen Group\n\n";
 
-data.forEach(d=>{
-csv+=Object.values(d).join(",")+"\n";
-});
+for(let i=0;i<t.rows.length;i++){
+
+let row=[];
+
+for(let j=0;j<t.rows[i].cells.length-1;j++){
+row.push(t.rows[i].cells[j].innerText);
+}
+
+csv+=row.join(",")+"\n";
+
+}
 
 let a=document.createElement("a");
 a.href=URL.createObjectURL(new Blob([csv]));
 a.download="report.csv";
 a.click();
+
+}
+
+/* ================= PRINT ================= */
+
+function printPDF(){
+window.print();
 }
