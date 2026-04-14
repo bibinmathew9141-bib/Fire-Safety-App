@@ -1,31 +1,31 @@
-body {
+body{
 margin:0;
 font-family:Arial;
 }
 
-.login-body, .main-body {
+.login-body,.main-body{
 background:linear-gradient(135deg,#1a0000,#330000,#000);
 color:white;
 }
 
-.login-container {
+.login-container{
 margin:100px auto;
 width:300px;
 padding:30px;
 text-align:center;
-background:rgba(0,0,0,0.8);
+background:rgba(0,0,0,0.85);
 box-shadow:0 0 20px red;
 border-radius:10px;
 }
 
-input {
+input{
 width:90%;
 padding:10px;
 margin:8px;
 border:none;
 }
 
-button {
+button{
 background:#ff3c00;
 color:white;
 border:none;
@@ -34,19 +34,19 @@ margin:5px;
 cursor:pointer;
 }
 
-.title {
+.title{
 text-align:center;
 color:#ff4500;
 }
 
-.card-list {
+.card-list{
 display:flex;
 flex-direction:column;
 align-items:center;
 margin-top:40px;
 }
 
-.card-list div {
+.card-list div{
 background:#222;
 padding:15px;
 margin:10px;
@@ -56,27 +56,32 @@ cursor:pointer;
 border:1px solid red;
 }
 
-.table-container {
+.table-container{
 width:95%;
 margin:auto;
 overflow:auto;
 }
 
-table {
+table{
 width:100%;
 border-collapse:collapse;
 }
 
-th,td {
+th,td{
 border:1px solid #444;
 padding:6px;
 text-align:center;
 }
 
-th {
+th{
 background:#8B0000;
 }
 
-td[contenteditable] {
+td[contenteditable]{
 background:#222;
+}
+
+.filter-box{
+text-align:center;
+margin:10px;
 }
