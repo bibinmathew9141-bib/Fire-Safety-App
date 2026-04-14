@@ -1,6 +1,8 @@
+
 /* ================= INIT ================= */
 
 function init(){
+
 document.getElementById("title").innerText =
 localStorage.getItem("mall")+" - "+localStorage.getItem("system");
 
@@ -59,6 +61,7 @@ t.innerHTML=`
 data.forEach((d,i)=>{
 
 let r=t.insertRow();
+
 r.innerHTML=`
 <td>${i+1}</td>
 <td contenteditable>${d.date}</td>
@@ -142,9 +145,11 @@ render();
 /* ================= DELETE ================= */
 
 function del(btn){
+
 let i=btn.parentElement.parentElement.rowIndex-1;
 let data=getData();
 data.splice(i,1);
+
 saveData(data);
 render();
 }
