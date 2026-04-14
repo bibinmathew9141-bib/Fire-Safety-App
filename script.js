@@ -23,8 +23,46 @@ function initPage(){
 document.getElementById("mallHeader").innerText =
 localStorage.getItem("mall") || "Tamdeen Group";
 
+renderTable();
+applyMode();
+buildColumnFilters();
+
+}
+
+/* ================= KEY ================= */
+
+function getBaseKey(){
+return localStorage.getItem("mall") + "_data";
+}
+
+/* ================= MODE ================= */
+
+function getMode(){
+return localStorage.getItem("sheet") || "daily";
+}
+
+/* ================= LOAD DATA ================= */
+
+function getData(){
+return JSON.parse(localStorage.getItem(getBaseKey()) || "[]");
+}
+
+/* ================= RENDER MAIN ENGINE ================= */
+
+function renderTable(){
+
+let mode=getMode();
+let data=getData();
+
+let table=document.getElementById("dataTable");
+
 /* RESET TABLE */
-document.getElementById("dataTable").innerHTML=`
+table.innerHTML="";
+
+/* DAILY TABLE */
+if(mode==="daily"){
+
+table.innerHTML=`
 <tr>
 <th>Sl</th>
 <th>Date</th>
@@ -37,110 +75,9 @@ document.getElementById("dataTable").innerHTML=`
 </tr>
 `;
 
-load();
-applyMode();
-buildColumnFilters();
-
-}
-
-/* ================= DATA KEY ================= */
-
-function getBaseKey(){
-return localStorage.getItem("mall") + "_data";
-}
-
-/* ================= MODE ================= */
-
-function getMode(){
-return localStorage.getItem("sheet") || "daily";
-}
-
-/* ================= APPLY MODE ================= */
-
-function applyMode(){
-
-let mode=getMode();
-let btn=document.getElementById("addBtn");
-
-if(btn){
-btn.style.display = (mode==="daily") ? "inline-block" : "none";
-}
-
-}
-
-/* ================= ADD ROW ================= */
-
-function addRow(){
-
-if(getMode()!=="daily") return;
-
-let t=document.getElementById("dataTable");
-
-let r=t.insertRow();
-
-r.innerHTML=`
-<td>${t.rows.length-1}</td>
-<td contenteditable>${formatDate(new Date())}</td>
-<td contenteditable></td>
-<td contenteditable></td>
-<td contenteditable></td>
-<td contenteditable></td>
-<td contenteditable></td>
-<td><button onclick="del(this)">X</button></td>
-`;
-
-save();
-
-}
-
-/* ================= DELETE ================= */
-
-function del(btn){
-btn.parentElement.parentElement.remove();
-save();
-}
-
-/* ================= SAVE ================= */
-
-function save(){
-
-let t=document.getElementById("dataTable");
-let data=[];
-
-for(let i=1;i<t.rows.length;i++){
-
-let c=t.rows[i].cells;
-
-data.push({
-date:c[1].innerText,
-tag:c[2].innerText,
-location:c[3].innerText,
-status:c[4].innerText,
-remarks:c[5].innerText,
-shift:c[6].innerText
-});
-
-}
-
-localStorage.setItem(getBaseKey(),JSON.stringify(data));
-
-}
-
-/* ================= LOAD ================= */
-
-function load(){
-
-let t=document.getElementById("dataTable");
-let data=JSON.parse(localStorage.getItem(getBaseKey())||"[]");
-
-let mode=getMode();
-
-/* DAILY VIEW */
-if(mode==="daily"){
-
 data.forEach((d,i)=>{
 
-let r=t.insertRow();
+let r=table.insertRow();
 
 r.innerHTML=`
 <td>${i+1}</td>
@@ -155,26 +92,15 @@ r.innerHTML=`
 
 });
 
-return;
 }
 
-/* MONTHLY + YEARLY VIEW */
-buildGrouped(data,mode);
+/* MONTHLY VIEW */
+if(mode==="monthly"){
 
-}
-
-/* ================= GROUP VIEW ================= */
-
-function buildGrouped(data,mode){
-
-let t=document.getElementById("dataTable");
-
-let title = (mode==="monthly") ? "Month" : "Year";
-
-t.innerHTML=`
+table.innerHTML=`
 <tr>
 <th>Sl</th>
-<th>${title}</th>
+<th>Month</th>
 <th>Total Records</th>
 </tr>
 `;
@@ -186,10 +112,7 @@ data.forEach(d=>{
 let dt=new Date(d.date);
 if(isNaN(dt)) return;
 
-let key =
-mode==="monthly"
-? dt.toLocaleString('en-US',{month:'short',year:'numeric'})
-: dt.getFullYear();
+let key = dt.toLocaleString('en-US',{month:'short',year:'numeric'});
 
 map[key]=(map[key]||0)+1;
 
@@ -199,7 +122,7 @@ let i=1;
 
 for(let k in map){
 
-let r=t.insertRow();
+let r=table.insertRow();
 
 r.innerHTML=`
 <td>${i++}</td>
@@ -211,6 +134,135 @@ r.innerHTML=`
 
 }
 
+/* YEARLY VIEW */
+if(mode==="yearly"){
+
+table.innerHTML=`
+<tr>
+<th>Sl</th>
+<th>Year</th>
+<th>Total Records</th>
+</tr>
+`;
+
+let map={};
+
+data.forEach(d=>{
+
+let dt=new Date(d.date);
+if(isNaN(dt)) return;
+
+let key = dt.getFullYear();
+
+map[key]=(map[key]||0)+1;
+
+});
+
+let i=1;
+
+for(let k in map){
+
+let r=table.insertRow();
+
+r.innerHTML=`
+<td>${i++}</td>
+<td>${k}</td>
+<td>${map[k]}</td>
+`;
+
+}
+
+}
+
+}
+
+/* ================= APPLY MODE ================= */
+
+function applyMode(){
+
+let btn=document.getElementById("addBtn");
+
+if(btn){
+btn.style.display = (getMode()==="daily") ? "inline-block" : "none";
+}
+
+}
+
+/* ================= ADD ROW ================= */
+
+function addRow(){
+
+if(getMode()!=="daily") return;
+
+let data=getData();
+
+data.push({
+date:formatDate(new Date()),
+tag:"",
+location:"",
+status:"",
+remarks:"",
+shift:""
+});
+
+localStorage.setItem(getBaseKey(),JSON.stringify(data));
+
+renderTable();
+
+}
+
+/* ================= DELETE ================= */
+
+function del(btn){
+
+let row=btn.parentElement.parentElement;
+let index=row.rowIndex-1;
+
+let data=getData();
+data.splice(index,1);
+
+localStorage.setItem(getBaseKey(),JSON.stringify(data));
+
+renderTable();
+
+}
+
+/* ================= SAVE INLINE EDIT ================= */
+
+document.addEventListener("input",function(e){
+
+if(getMode()!=="daily") return;
+
+let table=document.getElementById("dataTable");
+
+if(!table) return;
+
+let rows=table.rows;
+let data=getData();
+
+for(let i=1;i<rows.length;i++){
+
+let c=rows[i].cells;
+
+if(data[i-1]){
+
+data[i-1]={
+date:c[1].innerText,
+tag:c[2].innerText,
+location:c[3].innerText,
+status:c[4].innerText,
+remarks:c[5].innerText,
+shift:c[6].innerText
+};
+
+}
+
+}
+
+localStorage.setItem(getBaseKey(),JSON.stringify(data));
+
+});
+
 /* ================= DATE FORMAT ================= */
 
 function formatDate(d){
@@ -221,7 +273,7 @@ let yr=String(dt.getFullYear()).slice(-2);
 return `${day}-${mon}-${yr}`;
 }
 
-/* ================= COLUMN FILTERS (EXCEL STYLE) ================= */
+/* ================= COLUMN FILTER ================= */
 
 let filters={};
 
@@ -231,6 +283,9 @@ let table=document.getElementById("dataTable");
 
 let old=document.getElementById("filterRow");
 if(old) old.remove();
+
+/* only for DAILY */
+if(getMode()!=="daily") return;
 
 let row=table.insertRow(1);
 row.id="filterRow";
@@ -290,36 +345,4 @@ row.style.display=show?"":"none";
 
 }
 
-}
-
-/* ================= EXPORT ================= */
-
-function exportExcel(){
-
-let t=document.getElementById("dataTable");
-let csv="Tamdeen Group\n\n";
-
-for(let i=0;i<t.rows.length;i++){
-
-let row=[];
-
-for(let j=0;j<t.rows[i].cells.length-1;j++){
-row.push(t.rows[i].cells[j].innerText);
-}
-
-csv+=row.join(",")+"\n";
-
-}
-
-let a=document.createElement("a");
-a.href=URL.createObjectURL(new Blob([csv]));
-a.download="report.csv";
-a.click();
-
-}
-
-/* ================= PRINT ================= */
-
-function printPDF(){
-window.print();
 }
