@@ -162,7 +162,9 @@ return ${day}-${mon}-${yr};
 
 let filters={};
 
-function buildColumnFilters(){
+function buildFilters(){
+
+if(getMode()!=="daily") return;
 
 let table=document.getElementById("dataTable");
 
