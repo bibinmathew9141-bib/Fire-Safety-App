@@ -1,42 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Data</title>
+<title>Tamdeen Group</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="main-body" onload="initPage()">
+<body onload="initPage()">
 
-<h2 class="title">🏢 <span id="mallHeader"></span></h2>
-
-<div class="filter-box" id="monthYearBox"></div>
-
-<div class="filter-box">
-
-<button onclick="addRow()" id="addBtn">➕ Add Row</button>
-<button onclick="exportExcel()">📊 Excel</button>
-<button onclick="printPDF()">🖨 PDF</button>
-
+<div class="header">
+<h2 id="mallHeader">Mall</h2>
 </div>
 
-<div class="table-container">
-
-<table id="dataTable">
-
-<tr>
-<th>Sl</th>
-<th>Date</th>
-<th>Tag</th>
-<th>Location</th>
-<th>Status</th>
-<th>Remarks</th>
-<th>Shift</th>
-<th id="actionHead">Action</th>
-</tr>
-
-</table>
-
+<!-- NAVIGATION BUTTONS -->
+<div style="text-align:center;margin:10px;">
+<button onclick="openSheet('daily')">Daily</button>
+<button onclick="openSheet('monthly')">Monthly</button>
+<button onclick="openSheet('yearly')">Yearly</button>
 </div>
+
+<!-- ADD ROW BUTTON -->
+<div style="text-align:center;margin:10px;">
+<button id="addBtn" onclick="addRow()">+ Add Row</button>
+<button onclick="exportExcel()">Excel</button>
+<button onclick="printPDF()">PDF</button>
+</div>
+
+<!-- TABLE -->
+<table id="dataTable"></table>
 
 <script src="script.js"></script>
 </body>
