@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#0b0f14;
+color:white;
+text-align:center;
+}
+
+h2{
+margin-top:20px;
+color:#ff4d4d;
+}
+
+.card{
+margin:15px auto;
+width:80%;
+padding:20px;
+background:#1f2937;
+border-radius:10px;
+cursor:pointer;
+}
+.card:hover{
+background:#374151;
+}
+</style>
+</head>
+
+<body>
+
+<h2 id="mallName"></h2>
+
+<div class="card" onclick="openTable('fire')">Fire Systems</div>
+<div class="card" onclick="openTable('inspection')">Inspection</div>
+<div class="card" onclick="openTable('daily')">Daily Work</div>
+
+<script>
+document.getElementById("mallName").innerText =
+localStorage.getItem("mall");
+
+function openTable(system){
+localStorage.setItem("system",system);
+window.location="table.html";
+}
+</script>
+
+</body>
+</html>
