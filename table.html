@@ -1,33 +1,99 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Tamdeen Group</title>
+<title>Tamdeen Group System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="style.css">
+
+<style>
+body{
+font-family:Arial;
+background:#0b0f14;
+color:white;
+margin:0;
+}
+
+.header{
+text-align:center;
+padding:10px;
+background:#111826;
+font-size:18px;
+font-weight:bold;
+}
+
+.btnBar{
+text-align:center;
+margin:10px;
+}
+
+button{
+padding:8px 12px;
+margin:3px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+opacity:0.8;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+th,td{
+border:1px solid #333;
+padding:6px;
+text-align:center;
+font-size:13px;
+}
+
+th{
+background:#1f2937;
+}
+
+input{
+width:90%;
+padding:4px;
+font-size:12px;
+}
+</style>
+
 </head>
 
 <body onload="initPage()">
 
-<div class="header">
-<h2 id="mallHeader">Mall</h2>
+<!-- HEADER -->
+<div class="header" id="mallHeader">
+Loading...
 </div>
 
-<!-- NAVIGATION BUTTONS -->
-<div style="text-align:center;margin:10px;">
+<!-- MODE BUTTONS -->
+<div class="btnBar">
+
 <button onclick="openSheet('daily')">Daily</button>
 <button onclick="openSheet('monthly')">Monthly</button>
 <button onclick="openSheet('yearly')">Yearly</button>
+
 </div>
 
-<!-- ADD ROW BUTTON -->
-<div style="text-align:center;margin:10px;">
+<!-- ACTION BUTTONS -->
+<div class="btnBar">
+
 <button id="addBtn" onclick="addRow()">+ Add Row</button>
 <button onclick="exportExcel()">Excel</button>
 <button onclick="printPDF()">PDF</button>
+
 </div>
 
 <!-- TABLE -->
 <table id="dataTable"></table>
 
+<!-- SCRIPT -->
 <script src="script.js"></script>
+
 </body>
 </html>
