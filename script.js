@@ -1,55 +1,39 @@
-
-/* ================= NAVIGATION ================= */
-
-function openMall(mall){
-localStorage.setItem("mall",mall);
-window.location="system.html";
-}
-
-function openSystem(system){
-localStorage.setItem("system",system);
-window.location="table.html";
-}
-
-function openSheet(type){
-localStorage.setItem("sheet",type);
-location.reload();
-}
-
 /* ================= INIT ================= */
 
-function initPage(){
-
-document.getElementById("mallHeader").innerText =
-(localStorage.getItem("mall") || "") + " - " +
-(localStorage.getItem("system") || "");
+function init(){
+document.getElementById("title").innerText =
+localStorage.getItem("mall")+" - "+localStorage.getItem("system");
 
 render();
 applyMode();
-buildFilters();
-
 }
 
-/* ================= STORAGE ================= */
+/* ================= KEY ================= */
 
-function getKey(){
-return localStorage.getItem("mall") + "_" + localStorage.getItem("system");
-}
-
-/* ================= DATA ================= */
-
-function getData(){
-return JSON.parse(localStorage.getItem(getKey()) || "[]");
-}
-
-function saveData(data){
-localStorage.setItem(getKey(),JSON.stringify(data));
+function key(){
+return localStorage.getItem("mall")+"_"+localStorage.getItem("system");
 }
 
 /* ================= MODE ================= */
 
 function getMode(){
-return localStorage.getItem("sheet") || "daily";
+return localStorage.getItem("mode") || "daily";
+}
+
+function setMode(m){
+localStorage.setItem("mode",m);
+render();
+applyMode();
+}
+
+/* ================= DATA ================= */
+
+function getData(){
+return JSON.parse(localStorage.getItem(key()) || "[]");
+}
+
+function saveData(d){
+localStorage.setItem(key(),JSON.stringify(d));
 }
 
 /* ================= RENDER ================= */
@@ -58,33 +42,23 @@ function render(){
 
 let mode=getMode();
 let data=getData();
+let t=document.getElementById("table");
 
-let table=document.getElementById("dataTable");
+t.innerHTML="";
 
-/* RESET */
-table.innerHTML="";
-
-/* ================= DAILY ================= */
-
+/* DAILY */
 if(mode==="daily"){
 
-table.innerHTML=`
+t.innerHTML=`
 <tr>
-<th>Sl</th>
-<th>Date</th>
-<th>Tag</th>
-<th>Location</th>
-<th>Status</th>
-<th>Remarks</th>
-<th>Shift</th>
-<th>Action</th>
-</tr>
-`;
+<th>Sl</th><th>Date</th><th>Tag</th>
+<th>Location</th><th>Status</th>
+<th>Remarks</th><th>Shift</th><th>Action</th>
+</tr>`;
 
 data.forEach((d,i)=>{
 
-let r=table.insertRow();
-
+let r=t.insertRow();
 r.innerHTML=`
 <td>${i+1}</td>
 <td contenteditable>${d.date}</td>
@@ -97,119 +71,63 @@ r.innerHTML=`
 `;
 
 });
-
 }
 
-/* ================= MONTHLY ================= */
-
+/* MONTHLY */
 if(mode==="monthly"){
 
-table.innerHTML=`
-<tr>
-<th>Sl</th>
-<th>Month</th>
-<th>Total Records</th>
-</tr>
-`;
+t.innerHTML=`
+<tr><th>Sl</th><th>Month</th><th>Total</th></tr>`;
 
 let map={};
 
 data.forEach(d=>{
+let dt=new Date(d.date);
+if(isNaN(dt)) return;
 
-if(!d.date) return;
-
-let parts=d.date.split("-");
-if(parts.length<2) return;
-
-let key = parts[1] + "-" + parts[2];
-
-map[key]=(map[key]||0)+1;
-
+let k = dt.toLocaleString('en-US',{month:'short',year:'numeric'});
+map[k]=(map[k]||0)+1;
 });
 
 let i=1;
-
 for(let k in map){
-
-let r=table.insertRow();
-
-r.innerHTML=`
-<td>${i++}</td>
-<td>${k}</td>
-<td>${map[k]}</td>
-`;
-
+t.insertRow().innerHTML=
+`<td>${i++}</td><td>${k}</td><td>${map[k]}</td>`;
+}
 }
 
-}
-
-/* ================= YEARLY ================= */
-
+/* YEARLY */
 if(mode==="yearly"){
 
-table.innerHTML=`
-<tr>
-<th>Sl</th>
-<th>Year</th>
-<th>Total Records</th>
-</tr>
-`;
+t.innerHTML=`
+<tr><th>Sl</th><th>Year</th><th>Total</th></tr>`;
 
 let map={};
 
 data.forEach(d=>{
+let dt=new Date(d.date);
+if(isNaN(dt)) return;
 
-if(!d.date) return;
-
-let parts=d.date.split("-");
-if(parts.length<3) return;
-
-let year=parts[2];
-
-map[year]=(map[year]||0)+1;
-
+let y=dt.getFullYear();
+map[y]=(map[y]||0)+1;
 });
 
 let i=1;
-
-for(let k in map){
-
-let r=table.insertRow();
-
-r.innerHTML=`
-<td>${i++}</td>
-<td>${k}</td>
-<td>${map[k]}</td>
-`;
-
+for(let y in map){
+t.insertRow().innerHTML=
+`<td>${i++}</td><td>${y}</td><td>${map[y]}</td>`;
 }
-
 }
-
-}
-
-/* ================= MODE CONTROL ================= */
-
-function applyMode(){
-
-let btn=document.getElementById("addBtn");
-
-if(btn){
-btn.style.display = (getMode()==="daily") ? "inline-block" : "none";
-}
-
 }
 
 /* ================= ADD ROW ================= */
 
 function addRow(){
 
-if(getMode()!=="daily") return;
-
 let data=getData();
 
 data.push({
-date:formatDate(new Date()),
+date:new Date().toLocaleDateString(),
 tag:"",
 location:"",
 status:"",
@@ -219,103 +137,41 @@ shift:""
 
 saveData(data);
 render();
-
 }
 
 /* ================= DELETE ================= */
 
 function del(btn){
-
-let row=btn.parentElement.parentElement;
-let index=row.rowIndex-1;
-
+let i=btn.parentElement.parentElement.rowIndex-1;
 let data=getData();
-data.splice(index,1);
-
+data.splice(i,1);
 saveData(data);
 render();
-
 }
 
-/* ================= DATE FORMAT ================= */
+/* ================= MODE UI ================= */
 
-function formatDate(d){
-let dt=new Date(d);
-let day=String(dt.getDate()).padStart(2,'0');
-let mon=dt.toLocaleString('en-US',{month:'short'});
-let yr=String(dt.getFullYear()).slice(-2);
-return `${day}-${mon}-${yr}`;
+function applyMode(){
+
+let btn=document.getElementById("addBtn");
+if(!btn) return;
+
+btn.style.display = (getMode()==="daily") ? "inline-block" : "none";
 }
 
-/* ================= FILTER (ONLY DAILY) ================= */
+/* ================= EXPORT ================= */
 
-let filters={};
+function exportCSV(){
 
-function buildFilters(){
+let data=getData();
+let csv="Tamdeen Group\n";
 
-if(getMode()!=="daily") return;
+data.forEach(d=>{
+csv+=Object.values(d).join(",")+"\n";
+});
 
-let table=document.getElementById("dataTable");
-
-let old=document.getElementById("filterRow");
-if(old) old.remove();
-
-let row=table.insertRow(1);
-row.id="filterRow";
-
-let cols=table.rows[0].cells.length;
-
-for(let i=0;i<cols;i++){
-
-let cell=row.insertCell(i);
-
-if(i===0 || i===cols-1){
-cell.innerHTML="";
-continue;
-}
-
-let input=document.createElement("input");
-input.placeholder="Filter";
-input.style.width="90%";
-input.style.fontSize="12px";
-
-input.oninput=function(){
-filters[i]=this.value.toLowerCase();
-applyFilters();
-};
-
-cell.appendChild(input);
-
-}
-
-}
-
-function applyFilters(){
-
-let table=document.getElementById("dataTable");
-
-for(let i=2;i<table.rows.length;i++){
-
-let row=table.rows[i];
-let show=true;
-
-for(let col in filters){
-
-let val=filters[col];
-if(!val) continue;
-
-let cell=row.cells[col];
-if(!cell) continue;
-
-if(!cell.innerText.toLowerCase().includes(val)){
-show=false;
-break;
-}
-
-}
-
-row.style.display=show?"":"none";
-
-}
-
+let a=document.createElement("a");
+a.href=URL.createObjectURL(new Blob([csv]));
+a.download="report.csv";
+a.click();
 }
