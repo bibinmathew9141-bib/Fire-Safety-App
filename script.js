@@ -16,14 +16,18 @@ localStorage.setItem("sheet",t);
 window.location="table.html";
 }
 
-/* ================= INIT PAGE ================= */
+/* ================= GLOBAL FILTER STORE ================= */
+
+let activeFilters = {};
+
+/* ================= INIT ================= */
 
 function initPage(){
 
 document.getElementById("mallHeader").innerText =
 localStorage.getItem("mall") || "";
 
-/* RESET TABLE STRUCTURE */
+/* RESET TABLE */
 document.getElementById("dataTable").innerHTML=`
 <tr>
 <th>Sl</th>
@@ -41,10 +45,10 @@ load();
 applyMode();
 generateFilters();
 
-/* ⭐ IMPORTANT: FILTERS MUST BE LAST */
+/* ⭐ MUST BE LAST (IMPORTANT FIX) */
 setTimeout(()=>{
 addColumnFilters();
-},50);
+},100);
 
 }
 
@@ -54,14 +58,15 @@ function applyMode(){
 
 let type=localStorage.getItem("sheet");
 
+let addBtn=document.getElementById("addBtn");
+let actionHead=document.getElementById("actionHead");
+
 if(type==="daily"){
-document.getElementById("addBtn").style.display="inline-block";
-document.getElementById("actionHead")?.style && (document.getElementById("actionHead").style.display="table-cell");
+if(addBtn) addBtn.style.display="inline-block";
+if(actionHead) actionHead.style.display="table-cell";
 }else{
-document.getElementById("addBtn").style.display="none";
-if(document.getElementById("actionHead")){
-document.getElementById("actionHead").style.display="none";
-}
+if(addBtn) addBtn.style.display="none";
+if(actionHead) actionHead.style.display="none";
 }
 
 }
@@ -80,7 +85,7 @@ return `${day}-${mon}-${yr}`;
 
 }
 
-/* ================= ADD ROW (DAILY ONLY) ================= */
+/* ================= ADD ROW (ONLY DAILY) ================= */
 
 function addRow(){
 
@@ -118,6 +123,7 @@ let t=document.getElementById("dataTable");
 let data=[];
 
 for(let i=1;i<t.rows.length;i++){
+
 let c=t.rows[i].cells;
 
 data.push([
@@ -211,7 +217,7 @@ box.appendChild(b);
 
 }
 
-/* ================= SAFE DATE PARSER ================= */
+/* ================= SAFE DATE PARSE ================= */
 
 function parseDate(str){
 
@@ -264,7 +270,7 @@ t.rows[i].style.display=(d.getFullYear()==y)?"":"none";
 
 }
 
-/* ================= COLUMN FILTERS (FIXED 100%) ================= */
+/* ================= ⭐ EXCEL STYLE COLUMN FILTER SYSTEM ================= */
 
 function addColumnFilters(){
 
@@ -274,6 +280,7 @@ let table=document.getElementById("dataTable");
 let old=document.getElementById("filterRow");
 if(old) old.remove();
 
+/* create filter row */
 let filterRow=table.insertRow(1);
 filterRow.id="filterRow";
 
@@ -283,6 +290,7 @@ for(let i=0;i<cols;i++){
 
 let cell=filterRow.insertCell(i);
 
+/* skip SL and ACTION */
 if(i===0 || i===cols-1){
 cell.innerHTML="";
 continue;
@@ -294,10 +302,13 @@ input.placeholder="Filter";
 
 input.style.width="90%";
 input.style.padding="3px";
-input.style.boxSizing="border-box";
+input.style.fontSize="12px";
 
-input.addEventListener("keyup",function(){
-filterColumn(i,this.value);
+input.addEventListener("input",function(){
+
+activeFilters[i]=this.value.toLowerCase();
+applyExcelFilters();
+
 });
 
 cell.appendChild(input);
@@ -306,29 +317,41 @@ cell.appendChild(input);
 
 }
 
-/* ================= COLUMN FILTER ENGINE ================= */
+/* ================= APPLY ALL FILTERS TOGETHER ================= */
 
-function filterColumn(col,value){
+function applyExcelFilters(){
 
 let table=document.getElementById("dataTable");
 
-value=value.toLowerCase();
-
 for(let i=2;i<table.rows.length;i++){
 
-let cell=table.rows[i].cells[col];
+let row=table.rows[i];
+let show=true;
+
+for(let col in activeFilters){
+
+let value=activeFilters[col];
+if(!value) continue;
+
+let cell=row.cells[col];
 if(!cell) continue;
 
 let text=cell.innerText.toLowerCase();
 
-table.rows[i].style.display=
-text.includes(value) ? "" : "none";
+if(!text.includes(value)){
+show=false;
+break;
+}
+
+}
+
+row.style.display=show?"":"none";
 
 }
 
 }
 
-/* ================= EXPORT EXCEL ================= */
+/* ================= EXPORT ================= */
 
 function exportExcel(){
 
