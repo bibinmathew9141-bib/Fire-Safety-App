@@ -116,22 +116,27 @@ function showTab(tab) {
 
 // ADD ROW
 function addRow() {
-  let table = document.getElementById("table");
-  let rowCount = table.rows.length;
 
-  let row = table.insertRow();
+  let data = {
+    mall: mall,
+    system: system,
+    date: new Date().toISOString().split('T')[0],
+    tag: "Test Tag",
+    location: "Test Location",
+    status: "OK",
+    remarks: "Working",
+    shift: "Day"
+  };
 
-  row.innerHTML = `
-    <td>${rowCount}</td>
-    <td><input type="date" value="${new Date().toISOString().split('T')[0]}"></td>
-    <td><input></td>
-    <td><input></td>
-    <td><input></td>
-    <td><input></td>
-    <td><input></td>
-  `;
+  db.collection("records").add(data)
+    .then(() => {
+      alert("Data Saved!");
+    })
+    .catch((error) => {
+      alert("Error: " + error);
+    });
+
 }
-
 </script>
 
 </body>
