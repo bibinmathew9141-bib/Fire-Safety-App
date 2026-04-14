@@ -13,7 +13,6 @@
 
     h2 {
       color: red;
-      margin-top: 10px;
     }
 
     button {
@@ -33,7 +32,6 @@
 
     .tab {
       display: none;
-      margin-top: 10px;
     }
 
     .active {
@@ -57,14 +55,12 @@
 
 <body>
 
-<h2 id="title">Loading...</h2>
+<h2 id="title"></h2>
 
-<!-- TABS -->
 <button onclick="showTab('daily')">Daily Sheet</button>
-<button onclick="showTab('monthly')">Monthly Sheet</button>
-<button onclick="showTab('yearly')">Yearly Sheet</button>
+<button onclick="showTab('monthly')">Monthly</button>
+<button onclick="showTab('yearly')">Yearly</button>
 
-<!-- DAILY -->
 <div id="daily" class="tab active">
 
   <h3>Daily Entry</h3>
@@ -73,7 +69,7 @@
   <input id="location" placeholder="Location"><br>
   <input id="status" placeholder="Status"><br>
   <input id="remarks" placeholder="Remarks"><br>
-  <input id="shift" placeholder="Shift (Day/Night)"><br>
+  <input id="shift" placeholder="Shift"><br>
 
   <button onclick="addRow()">➕ Add Row</button>
 
@@ -91,62 +87,63 @@
 
 </div>
 
-<!-- MONTHLY -->
 <div id="monthly" class="tab">
-  <h3>Monthly Sheet</h3>
+  <h3>Monthly Sheet (Next Step)</h3>
 </div>
 
-<!-- YEARLY -->
 <div id="yearly" class="tab">
-  <h3>Yearly Sheet</h3>
+  <h3>Yearly Sheet (Next Step)</h3>
 </div>
-
-<!-- FIREBASE v8 -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
 
-// =====================
 // TITLE
-// =====================
 let mall = localStorage.getItem("mall") || "Mall";
 let system = localStorage.getItem("system") || "System";
 
 document.getElementById("title").innerText =
   mall + " - " + system;
 
-// =====================
-// TABS
-// =====================
-function showTab(tab) {
+// LOAD SAVED DATA
+let records = JSON.parse(localStorage.getItem("records")) || [];
 
-  document.getElementById("daily").classList.remove("active");
-  document.getElementById("monthly").classList.remove("active");
-  document.getElementById("yearly").classList.remove("active");
+// SHOW TABLE
+function renderTable() {
 
-  document.getElementById(tab).classList.add("active");
+  let table = document.getElementById("table");
+
+  table.innerHTML = `
+    <tr>
+      <th>Sl No</th>
+      <th>Date</th>
+      <th>Tag</th>
+      <th>Location</th>
+      <th>Status</th>
+      <th>Remarks</th>
+      <th>Shift</th>
+    </tr>
+  `;
+
+  records.forEach((d, i) => {
+
+    let row = table.insertRow();
+
+    row.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${d.date}</td>
+      <td>${d.tag}</td>
+      <td>${d.location}</td>
+      <td>${d.status}</td>
+      <td>${d.remarks}</td>
+      <td>${d.shift}</td>
+    `;
+  });
 }
 
-// =====================
-// FIREBASE CONFIG
-// =====================
-const firebaseConfig = {
-  apiKey: "AIzaSyCIbZZvMeMxO2kbHCkWunMIfDRgCz_OngE",
-  authDomain: "fire-safety-app-5b93f.firebaseapp.com",
-  projectId: "fire-safety-app-5b93f",
-  storageBucket: "fire-safety-app-5b93f.firebasestorage.app",
-  messagingSenderId: "641973984641",
-  appId: "1:641973984641:web:3829c7001573357c4a1c80"
-};
+// INITIAL LOAD
+renderTable();
 
-// INIT FIREBASE
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// =====================
-// ADD ROW (SAVE DATA)
-// =====================
+// ADD ROW
 function addRow() {
 
   let tag = document.getElementById("tag").value;
@@ -160,18 +157,20 @@ function addRow() {
     return;
   }
 
-  db.collection("records").add({
-    mall: mall,
-    system: system,
+  let data = {
     date: new Date().toISOString().split('T')[0],
     tag: tag,
     location: location,
     status: status,
     remarks: remarks,
     shift: shift
-  });
+  };
 
-  alert("Data Saved!");
+  records.push(data);
+
+  localStorage.setItem("records", JSON.stringify(records));
+
+  renderTable();
 
   // clear inputs
   document.getElementById("tag").value = "";
@@ -181,47 +180,15 @@ function addRow() {
   document.getElementById("shift").value = "";
 }
 
-// =====================
-// LOAD DATA REALTIME
-// =====================
-db.collection("records")
-  .where("mall", "==", mall)
-  .where("system", "==", system)
-  .onSnapshot((snapshot) => {
+// TABS
+function showTab(tab) {
 
-    let table = document.getElementById("table");
+  document.getElementById("daily").classList.remove("active");
+  document.getElementById("monthly").classList.remove("active");
+  document.getElementById("yearly").classList.remove("active");
 
-    table.innerHTML = `
-      <tr>
-        <th>Sl No</th>
-        <th>Date</th>
-        <th>Tag</th>
-        <th>Location</th>
-        <th>Status</th>
-        <th>Remarks</th>
-        <th>Shift</th>
-      </tr>
-    `;
-
-    let i = 1;
-
-    snapshot.forEach(doc => {
-      let d = doc.data();
-
-      let row = table.insertRow();
-
-      row.innerHTML = `
-        <td>${i++}</td>
-        <td>${d.date}</td>
-        <td>${d.tag}</td>
-        <td>${d.location}</td>
-        <td>${d.status}</td>
-        <td>${d.remarks}</td>
-        <td>${d.shift}</td>
-      `;
-    });
-
-  });
+  document.getElementById(tab).classList.add("active");
+}
 
 </script>
 
