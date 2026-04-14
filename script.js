@@ -1,4 +1,3 @@
-
 /* ================= NAVIGATION ================= */
 
 function openMall(m){
@@ -23,53 +22,7 @@ function initPage(){
 document.getElementById("mallHeader").innerText =
 localStorage.getItem("mall") || "Tamdeen Group";
 
-render();
-applyMode();
-buildFilters();
-
-}
-
-/* ================= STORAGE KEY ================= */
-
-function getKey(){
-return localStorage.getItem("mall") + "_data";
-}
-
-/* ================= MODE ================= */
-
-function getMode(){
-return localStorage.getItem("sheet") || "daily";
-}
-
-/* ================= GET DATA ================= */
-
-function getData(){
-return JSON.parse(localStorage.getItem(getKey()) || "[]");
-}
-
-/* ================= SAVE DATA ================= */
-
-function saveData(data){
-localStorage.setItem(getKey(),JSON.stringify(data));
-}
-
-/* ================= RENDER ENGINE ================= */
-
-function render(){
-
-let mode=getMode();
-let data=getData();
-
-let table=document.getElementById("dataTable");
-
-/* RESET */
-table.innerHTML="";
-
-/* ================= DAILY ================= */
-
-if(mode==="daily"){
-
-table.innerHTML=`
+document.getElementById("dataTable").innerHTML=`
 <tr>
 <th>Sl</th>
 <th>Date</th>
@@ -82,122 +35,25 @@ table.innerHTML=`
 </tr>
 `;
 
-data.forEach((d,i)=>{
-
-let r=table.insertRow();
-
-r.innerHTML=`
-<td>${i+1}</td>
-<td contenteditable>${d.date}</td>
-<td contenteditable>${d.tag}</td>
-<td contenteditable>${d.location}</td>
-<td contenteditable>${d.status}</td>
-<td contenteditable>${d.remarks}</td>
-<td contenteditable>${d.shift}</td>
-<td><button onclick="del(this)">X</button></td>
-`;
-
-});
+load();
+applyMode();
+buildColumnFilters();
 
 }
 
-/* ================= MONTHLY ================= */
+/* ================= MODE ================= */
 
-if(mode==="monthly"){
-
-table.innerHTML=`
-<tr>
-<th>Sl</th>
-<th>Month</th>
-<th>Total Records</th>
-</tr>
-`;
-
-let map={};
-
-data.forEach(d=>{
-
-if(!d.date) return;
-
-let parts=d.date.split("-");
-if(parts.length<2) return;
-
-/* SAFE MONTH KEY */
-let key = parts[1] + "-" + parts[2];
-
-map[key]=(map[key]||0)+1;
-
-});
-
-let i=1;
-
-for(let k in map){
-
-let r=table.insertRow();
-
-r.innerHTML=`
-<td>${i++}</td>
-<td>${k}</td>
-<td>${map[k]}</td>
-`;
-
+function getMode(){
+return localStorage.getItem("sheet") || "daily";
 }
-
-}
-
-/* ================= YEARLY ================= */
-
-if(mode==="yearly"){
-
-table.innerHTML=`
-<tr>
-<th>Sl</th>
-<th>Year</th>
-<th>Total Records</th>
-</tr>
-`;
-
-let map={};
-
-data.forEach(d=>{
-
-if(!d.date) return;
-
-let parts=d.date.split("-");
-if(parts.length<3) return;
-
-let year = parts[2];
-
-map[year]=(map[year]||0)+1;
-
-});
-
-let i=1;
-
-for(let k in map){
-
-let r=table.insertRow();
-
-r.innerHTML=`
-<td>${i++}</td>
-<td>${k}</td>
-<td>${map[k]}</td>
-`;
-
-}
-
-}
-
-}
-
-/* ================= MODE APPLY ================= */
 
 function applyMode(){
 
+let mode=getMode();
 let btn=document.getElementById("addBtn");
 
 if(btn){
-btn.style.display = (getMode()==="daily") ? "inline-block" : "none";
+btn.style.display = (mode==="daily") ? "inline-block" : "none";
 }
 
 }
@@ -208,57 +64,105 @@ function addRow(){
 
 if(getMode()!=="daily") return;
 
-let data=getData();
+let t=document.getElementById("dataTable");
 
-data.push({
-date:formatDate(new Date()),
-tag:"",
-location:"",
-status:"",
-remarks:"",
-shift:""
-});
+let r=t.insertRow();
 
-saveData(data);
-render();
+r.innerHTML=`
+<td>${t.rows.length-1}</td>
+<td contenteditable>${formatDate(new Date())}</td>
+<td contenteditable></td>
+<td contenteditable></td>
+<td contenteditable></td>
+<td contenteditable></td>
+<td contenteditable></td>
+<td><button onclick="del(this)">X</button></td>
+`;
+
+save();
 
 }
 
 /* ================= DELETE ================= */
 
 function del(btn){
+btn.parentElement.parentElement.remove();
+save();
+}
 
-let row=btn.parentElement.parentElement;
-let index=row.rowIndex-1;
+/* ================= SAVE ================= */
 
-let data=getData();
-data.splice(index,1);
+function save(){
 
-saveData(data);
-render();
+let t=document.getElementById("dataTable");
+let data=[];
+
+for(let i=1;i<t.rows.length;i++){
+
+let c=t.rows[i].cells;
+
+data.push([
+c[1].innerText,
+c[2].innerText,
+c[3].innerText,
+c[4].innerText,
+c[5].innerText,
+c[6].innerText
+]);
 
 }
 
-/* ================= FORMAT DATE ================= */
+localStorage.setItem(getKey(),JSON.stringify(data));
+
+}
+
+/* ================= LOAD ================= */
+
+function load(){
+
+let t=document.getElementById("dataTable");
+let data=JSON.parse(localStorage.getItem(getKey())||"[]");
+
+data.forEach((d,i)=>{
+
+let r=t.insertRow();
+
+r.innerHTML=`
+<td>${i+1}</td>
+<td contenteditable>${d[0]}</td>
+<td contenteditable>${d[1]}</td>
+<td contenteditable>${d[2]}</td>
+<td contenteditable>${d[3]}</td>
+<td contenteditable>${d[4]}</td>
+<td contenteditable>${d[5]}</td>
+<td><button onclick="del(this)">X</button></td>
+`;
+
+});
+
+}
+
+/* ================= KEY ================= */
+
+function getKey(){
+return localStorage.getItem("mall")+"_"+getMode();
+}
+
+/* ================= DATE ================= */
 
 function formatDate(d){
-
 let dt=new Date(d);
-
 let day=String(dt.getDate()).padStart(2,'0');
 let mon=dt.toLocaleString('en-US',{month:'short'});
 let yr=String(dt.getFullYear()).slice(-2);
-
-return `${day}-${mon}-${yr}`;
+return ${day}-${mon}-${yr};
 }
 
-/* ================= COLUMN FILTER (SIMPLE + SAFE) ================= */
+/* ================= COLUMN FILTERS (EXCEL STYLE) ================= */
 
 let filters={};
 
-function buildFilters(){
-
-if(getMode()!=="daily") return;
+function buildColumnFilters(){
 
 let table=document.getElementById("dataTable");
 
@@ -323,4 +227,36 @@ row.style.display=show?"":"none";
 
 }
 
+}
+
+/* ================= EXPORT ================= */
+
+function exportExcel(){
+
+let t=document.getElementById("dataTable");
+let csv="Tamdeen Group\n\n";
+
+for(let i=0;i<t.rows.length;i++){
+
+let row=[];
+
+for(let j=0;j<t.rows[i].cells.length-1;j++){
+row.push(t.rows[i].cells[j].innerText);
+}
+
+csv+=row.join(",")+"\n";
+
+}
+
+let a=document.createElement("a");
+a.href=URL.createObjectURL(new Blob([csv]));
+a.download="report.csv";
+a.click();
+
+}
+
+/* ================= PRINT ================= */
+
+function printPDF(){
+window.print();
 }
