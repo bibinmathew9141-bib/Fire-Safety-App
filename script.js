@@ -1,6 +1,6 @@
+/* ================= LOGIN NOT HERE ================= */
 
-/* ================= NAVIGATION ================= */
-
+/* NAV */
 function openMall(m){
 localStorage.setItem("mall",m);
 window.location="mall.html";
@@ -16,14 +16,18 @@ localStorage.setItem("sheet",t);
 window.location="table.html";
 }
 
-/* ================= INIT ================= */
+/* KEY */
+function key(){
+return localStorage.getItem("mall")+"_"+localStorage.getItem("system")+"_"+localStorage.getItem("sheet");
+}
 
+/* INIT */
 function initPage(){
 
 document.getElementById("mallHeader").innerText =
 localStorage.getItem("mall");
 
-/* RESET TABLE */
+/* RESET TABLE ALWAYS (IMPORTANT FIX) */
 document.getElementById("dataTable").innerHTML=`
 <tr>
 <th>Sl</th>
@@ -38,16 +42,13 @@ document.getElementById("dataTable").innerHTML=`
 `;
 
 load();
-applyMode();
 generateFilters();
-addColumnFilters();
-
+applyMode();
 }
 
 /* ================= MODE CONTROL ================= */
 
 function applyMode(){
-
 let type=localStorage.getItem("sheet");
 
 if(type==="daily"){
@@ -57,24 +58,19 @@ document.getElementById("actionHead").style.display="table-cell";
 document.getElementById("addBtn").style.display="none";
 document.getElementById("actionHead").style.display="none";
 }
-
 }
 
 /* ================= DATE FORMAT ================= */
 
 function formatDate(d){
-
 let dt=new Date(d);
-
 let day=String(dt.getDate()).padStart(2,'0');
 let mon=dt.toLocaleString('en-US',{month:'short'});
 let yr=String(dt.getFullYear()).slice(-2);
-
 return `${day}-${mon}-${yr}`;
-
 }
 
-/* ================= ADD ROW (DAILY ONLY) ================= */
+/* ================= ADD ROW ================= */
 
 function addRow(){
 
@@ -94,7 +90,6 @@ r.innerHTML=`
 `;
 
 save();
-
 }
 
 /* ================= DELETE ================= */
@@ -125,8 +120,7 @@ c[6].innerText
 
 }
 
-localStorage.setItem(getKey(),JSON.stringify(data));
-
+localStorage.setItem(key(),JSON.stringify(data));
 }
 
 /* ================= LOAD ================= */
@@ -134,7 +128,7 @@ localStorage.setItem(getKey(),JSON.stringify(data));
 function load(){
 
 let t=document.getElementById("dataTable");
-let data=JSON.parse(localStorage.getItem(getKey())||"[]");
+let data=JSON.parse(localStorage.getItem(key())||"[]");
 
 data.forEach((d,i)=>{
 
@@ -155,13 +149,7 @@ r.innerHTML=`
 
 }
 
-/* ================= KEY ================= */
-
-function getKey(){
-return localStorage.getItem("mall")+"_"+localStorage.getItem("system")+"_"+localStorage.getItem("sheet");
-}
-
-/* ================= MONTH + YEAR FILTER ================= */
+/* ================= FILTER SYSTEM FIXED ================= */
 
 function generateFilters(){
 
@@ -218,10 +206,9 @@ let date=new Date(`${mon} ${day}, ${yr}`);
 if(isNaN(date)) return null;
 
 return date;
-
 }
 
-/* ================= FILTER MONTH ================= */
+/* ================= FILTER ================= */
 
 function filterMonth(m){
 
@@ -240,8 +227,6 @@ t.rows[i].style.display=(label===m)?"":"none";
 
 }
 
-/* ================= FILTER YEAR ================= */
-
 function filterYear(y){
 
 let t=document.getElementById("dataTable");
@@ -252,59 +237,6 @@ let d=parseDate(t.rows[i].cells[1].innerText);
 if(!d) continue;
 
 t.rows[i].style.display=(d.getFullYear()==y)?"":"none";
-
-}
-
-}
-
-/* ================= COLUMN FILTERS (EXCEL STYLE) ================= */
-
-function addColumnFilters(){
-
-let table=document.getElementById("dataTable");
-
-let old=document.getElementById("filterRow");
-if(old) old.remove();
-
-let filterRow=table.insertRow(1);
-filterRow.id="filterRow";
-
-for(let i=0;i<table.rows[0].cells.length;i++){
-
-let cell=filterRow.insertCell(i);
-
-if(i===0 || i===table.rows[0].cells.length-1){
-cell.innerHTML="";
-continue;
-}
-
-cell.innerHTML=`
-<input type="text"
-placeholder="Filter"
-onkeyup="filterColumn(${i},this.value)"
-style="width:90%;padding:3px;">
-`;
-
-}
-
-}
-
-/* ================= COLUMN FILTER ENGINE ================= */
-
-function filterColumn(col,value){
-
-let table=document.getElementById("dataTable");
-
-value=value.toLowerCase();
-
-for(let i=2;i<table.rows.length;i++){
-
-let cell=table.rows[i].cells[col];
-if(!cell) continue;
-
-let text=cell.innerText.toLowerCase();
-
-table.rows[i].style.display=text.includes(value)?"":"none";
 
 }
 
