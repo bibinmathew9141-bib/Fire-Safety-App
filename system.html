@@ -14,8 +14,8 @@ text-align:center;
 }
 
 h2{
-margin-top:20px;
 color:#ff4d4d;
+margin-top:20px;
 }
 
 .card{
@@ -26,6 +26,7 @@ background:#1f2937;
 border-radius:10px;
 cursor:pointer;
 }
+
 .card:hover{
 background:#374151;
 }
@@ -34,14 +35,14 @@ background:#374151;
 
 <body>
 
-<h2 id="mallName"></h2>
+<h2 id="mall"></h2>
 
 <div class="card" onclick="openTable('fire')">Fire Systems</div>
 <div class="card" onclick="openTable('inspection')">Inspection</div>
 <div class="card" onclick="openTable('daily')">Daily Work</div>
 
 <script>
-document.getElementById("mallName").innerText =
+document.getElementById("mall").innerText =
 localStorage.getItem("mall");
 
 function openTable(system){
