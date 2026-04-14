@@ -1,6 +1,6 @@
-/* ================= LOGIN NOT HERE ================= */
 
-/* NAV */
+/* ================= NAVIGATION ================= */
+
 function openMall(m){
 localStorage.setItem("mall",m);
 window.location="mall.html";
@@ -8,26 +8,22 @@ window.location="mall.html";
 
 function openSystem(s){
 localStorage.setItem("system",s);
+window.location="sheet.html";
+}
+
+function openSheet(type){
+localStorage.setItem("sheet",type);
 window.location="table.html";
 }
 
-function openSheet(t){
-localStorage.setItem("sheet",t);
-window.location="table.html";
-}
+/* ================= INIT ================= */
 
-/* KEY */
-function key(){
-return localStorage.getItem("mall")+"_"+localStorage.getItem("system")+"_"+localStorage.getItem("sheet");
-}
-
-/* INIT */
 function initPage(){
 
 document.getElementById("mallHeader").innerText =
-localStorage.getItem("mall");
+localStorage.getItem("mall") || "";
 
-/* RESET TABLE ALWAYS (IMPORTANT FIX) */
+/* RESET TABLE */
 document.getElementById("dataTable").innerHTML=`
 <tr>
 <th>Sl</th>
@@ -42,37 +38,43 @@ document.getElementById("dataTable").innerHTML=`
 `;
 
 load();
-generateFilters();
+
 applyMode();
+buildFilters();
+
+setTimeout(()=>{
+buildColumnFilters();
+},100);
+
 }
 
-/* ================= MODE CONTROL ================= */
+/* ================= MODE SYSTEM (FIXED) ================= */
+
+function getMode(){
+return localStorage.getItem("sheet");
+}
+
+/* ================= APPLY MODE ================= */
 
 function applyMode(){
-let type=localStorage.getItem("sheet");
 
-if(type==="daily"){
-document.getElementById("addBtn").style.display="inline-block";
-document.getElementById("actionHead").style.display="table-cell";
+let mode=getMode();
+
+let addBtn=document.getElementById("addBtn");
+
+if(mode==="daily"){
+if(addBtn) addBtn.style.display="inline-block";
 }else{
-document.getElementById("addBtn").style.display="none";
-document.getElementById("actionHead").style.display="none";
-}
+if(addBtn) addBtn.style.display="none";
 }
 
-/* ================= DATE FORMAT ================= */
-
-function formatDate(d){
-let dt=new Date(d);
-let day=String(dt.getDate()).padStart(2,'0');
-let mon=dt.toLocaleString('en-US',{month:'short'});
-let yr=String(dt.getFullYear()).slice(-2);
-return `${day}-${mon}-${yr}`;
 }
 
-/* ================= ADD ROW ================= */
+/* ================= ADD ROW (ONLY DAILY) ================= */
 
 function addRow(){
+
+if(getMode()!=="daily") return;
 
 let t=document.getElementById("dataTable");
 
@@ -90,6 +92,7 @@ r.innerHTML=`
 `;
 
 save();
+
 }
 
 /* ================= DELETE ================= */
@@ -107,6 +110,7 @@ let t=document.getElementById("dataTable");
 let data=[];
 
 for(let i=1;i<t.rows.length;i++){
+
 let c=t.rows[i].cells;
 
 data.push([
@@ -120,7 +124,8 @@ c[6].innerText
 
 }
 
-localStorage.setItem(key(),JSON.stringify(data));
+localStorage.setItem(getKey(),JSON.stringify(data));
+
 }
 
 /* ================= LOAD ================= */
@@ -128,7 +133,7 @@ localStorage.setItem(key(),JSON.stringify(data));
 function load(){
 
 let t=document.getElementById("dataTable");
-let data=JSON.parse(localStorage.getItem(key())||"[]");
+let data=JSON.parse(localStorage.getItem(getKey())||"[]");
 
 data.forEach((d,i)=>{
 
@@ -149,108 +154,126 @@ r.innerHTML=`
 
 }
 
-/* ================= FILTER SYSTEM FIXED ================= */
+/* ================= KEY ================= */
 
-function generateFilters(){
+function getKey(){
+return localStorage.getItem("mall")+"_"+localStorage.getItem("system")+"_"+localStorage.getItem("sheet");
+}
+
+/* ================= DATE ================= */
+
+function formatDate(d){
+let dt=new Date(d);
+let day=String(dt.getDate()).padStart(2,'0');
+let mon=dt.toLocaleString('en-US',{month:'short'});
+let yr=String(dt.getFullYear()).slice(-2);
+return `${day}-${mon}-${yr}`;
+}
+
+/* ================= FILTERS (MONTH/YEAR SIMPLE FIX) ================= */
+
+function buildFilters(){
 
 let box=document.getElementById("monthYearBox");
 if(!box) return;
 
-let t=document.getElementById("dataTable");
-
-let months=new Set();
-let years=new Set();
-
-for(let i=1;i<t.rows.length;i++){
-
-let d=parseDate(t.rows[i].cells[1].innerText);
-if(!d) continue;
-
-months.add(d.toLocaleString('en-US',{month:'short',year:'numeric'}));
-years.add(d.getFullYear());
+box.innerHTML=`
+<button onclick="resetFilters()">All</button>
+`;
 
 }
 
-box.innerHTML="";
+/* ================= RESET FILTER ================= */
 
-months.forEach(m=>{
-let b=document.createElement("button");
-b.innerText=m;
-b.onclick=()=>filterMonth(m);
-box.appendChild(b);
-});
-
-years.forEach(y=>{
-let b=document.createElement("button");
-b.innerText=y;
-b.onclick=()=>filterYear(y);
-box.appendChild(b);
-});
-
-}
-
-/* ================= SAFE DATE PARSE ================= */
-
-function parseDate(str){
-
-let parts=str.split("-");
-
-if(parts.length<3) return null;
-
-let day=parts[0];
-let mon=parts[1];
-let yr="20"+parts[2];
-
-let date=new Date(`${mon} ${day}, ${yr}`);
-
-if(isNaN(date)) return null;
-
-return date;
-}
-
-/* ================= FILTER ================= */
-
-function filterMonth(m){
+function resetFilters(){
 
 let t=document.getElementById("dataTable");
 
 for(let i=1;i<t.rows.length;i++){
+t.rows[i].style.display="";
+}
 
-let d=parseDate(t.rows[i].cells[1].innerText);
-if(!d) continue;
+}
 
-let label=d.toLocaleString('en-US',{month:'short',year:'numeric'});
+/* ================= COLUMN FILTER (EXCEL STYLE WORKING) ================= */
 
-t.rows[i].style.display=(label===m)?"":"none";
+let filters={};
+
+function buildColumnFilters(){
+
+let table=document.getElementById("dataTable");
+
+let old=document.getElementById("filterRow");
+if(old) old.remove();
+
+let row=table.insertRow(1);
+row.id="filterRow";
+
+let cols=table.rows[0].cells.length;
+
+for(let i=0;i<cols;i++){
+
+let cell=row.insertCell(i);
+
+if(i===0 || i===cols-1){
+cell.innerHTML="";
+continue;
+}
+
+let input=document.createElement("input");
+input.placeholder="Filter";
+input.style.width="90%";
+input.style.fontSize="12px";
+
+input.oninput=function(){
+filters[i]=this.value.toLowerCase();
+applyFilters();
+};
+
+cell.appendChild(input);
 
 }
 
 }
 
-function filterYear(y){
+/* ================= APPLY FILTER ================= */
 
-let t=document.getElementById("dataTable");
+function applyFilters(){
 
-for(let i=1;i<t.rows.length;i++){
+let table=document.getElementById("dataTable");
 
-let d=parseDate(t.rows[i].cells[1].innerText);
-if(!d) continue;
+for(let i=2;i<table.rows.length;i++){
 
-t.rows[i].style.display=(d.getFullYear()==y)?"":"none";
+let row=table.rows[i];
+let show=true;
+
+for(let col in filters){
+
+let val=filters[col];
+if(!val) continue;
+
+let cell=row.cells[col];
+if(!cell) continue;
+
+if(!cell.innerText.toLowerCase().includes(val)){
+show=false;
+break;
+}
+
+}
+
+row.style.display=show?"":"none";
 
 }
 
 }
 
-/* ================= EXPORT EXCEL ================= */
+/* ================= EXPORT ================= */
 
 function exportExcel(){
 
 let t=document.getElementById("dataTable");
-let csv="";
-
-csv+="Tamdeen Group\n";
-csv+=localStorage.getItem("mall")+"\n\n";
+let csv="Tamdeen Group\n\n";
 
 for(let i=0;i<t.rows.length;i++){
 
