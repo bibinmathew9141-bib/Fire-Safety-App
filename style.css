@@ -1,0 +1,53 @@
+body {
+    margin: 0;
+    font-family: Arial;
+}
+
+/* 🔥 Fire Theme Background */
+.login-body {
+    background: linear-gradient(135deg, #1a0000, #330000, #000000);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Login Box */
+.login-container {
+    background: rgba(0,0,0,0.8);
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 0 20px red;
+}
+
+.login-container h1 {
+    color: #ff3c00;
+}
+
+input {
+    display: block;
+    width: 250px;
+    margin: 10px auto;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+}
+
+button {
+    background: #ff3c00;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+button:hover {
+    background: red;
+}
+
+#error {
+    color: yellow;
+}
