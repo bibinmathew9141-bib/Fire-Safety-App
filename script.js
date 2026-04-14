@@ -1,15 +1,4 @@
-/* LOGIN */
-function login(){
-let u=document.getElementById("username").value;
-let p=document.getElementById("password").value;
-
-if(u==="Tamdeen" && p==="T@mdeen123"){
-localStorage.setItem("login","yes");
-window.location="home.html";
-}else{
-document.getElementById("error").innerText="Wrong Login";
-}
-}
+/* LOGIN FLOW DONE IN HTML */
 
 /* NAVIGATION */
 function openMall(m){
@@ -27,26 +16,23 @@ localStorage.setItem("sheet",t);
 window.location="table.html";
 }
 
-function goBack(){
-window.history.back();
-}
-
-function goHome(){
-window.location="home.html";
-}
-
-/* KEY */
-function key(){
-return localStorage.getItem("mall")+"_"+localStorage.getItem("system");
-}
-
 /* INIT */
 function initPage(){
 document.getElementById("mallHeader").innerText =
-localStorage.getItem("mall")+" - "+localStorage.getItem("system");
+localStorage.getItem("mall");
+
+/* SHOW/HIDE BASED ON TYPE */
+let type=localStorage.getItem("sheet");
+
+if(type==="daily"){
+document.getElementById("addBtn").style.display="inline-block";
+}else{
+document.getElementById("addBtn").style.display="none";
+document.getElementById("actionHead").style.display="none";
+}
 
 load();
-generate();
+generateMonthYear();
 }
 
 /* DATE FORMAT */
@@ -58,10 +44,9 @@ let yr=String(dt.getFullYear()).slice(-2);
 return `${day}-${mon}-${yr}`;
 }
 
-/* ADD ROW */
+/* ADD ROW (ONLY DAILY) */
 function addRow(){
 let t=document.getElementById("dataTable");
-
 let r=t.insertRow();
 
 r.innerHTML=`
@@ -117,12 +102,64 @@ r.innerHTML=`
 });
 }
 
-/* FILTER */
-function colFilter(c,val){
+/* KEY */
+function key(){
+return localStorage.getItem("mall")+"_"+localStorage.getItem("system");
+}
+
+/* MONTH YEAR MODULE (READ ONLY) */
+function generateMonthYear(){
+let box=document.getElementById("monthYearBox");
+if(!box) return;
+
 let t=document.getElementById("dataTable");
+let months=new Set();
+let years=new Set();
+
 for(let i=1;i<t.rows.length;i++){
-let v=t.rows[i].cells[c].innerText.toLowerCase();
-t.rows[i].style.display=v.includes(val.toLowerCase())?"":"none";
+let d=new Date(t.rows[i].cells[1].innerText);
+
+if(!isNaN(d)){
+months.add(d.toLocaleString('en-US',{month:'short',year:'numeric'}));
+years.add(d.getFullYear());
+}
+}
+
+box.innerHTML="";
+
+months.forEach(m=>{
+let b=document.createElement("button");
+b.innerText=m;
+b.onclick=()=>filterMonth(m);
+box.appendChild(b);
+});
+
+years.forEach(y=>{
+let b=document.createElement("button");
+b.innerText=y;
+b.onclick=()=>filterYear(y);
+box.appendChild(b);
+});
+}
+
+function filterMonth(m){
+let t=document.getElementById("dataTable");
+
+for(let i=1;i<t.rows.length;i++){
+let d=new Date(t.rows[i].cells[1].innerText);
+let label=d.toLocaleString('en-US',{month:'short',year:'numeric'});
+
+t.rows[i].style.display=(label===m)?"":"none";
+}
+}
+
+function filterYear(y){
+let t=document.getElementById("dataTable");
+
+for(let i=1;i<t.rows.length;i++){
+let d=new Date(t.rows[i].cells[1].innerText);
+
+t.rows[i].style.display=(d.getFullYear()==y)?"":"none";
 }
 }
 
@@ -132,7 +169,7 @@ let t=document.getElementById("dataTable");
 let csv="";
 
 csv+="Tamdeen Group\n";
-csv+=localStorage.getItem("mall")+" - "+localStorage.getItem("system")+"\n\n";
+csv+=localStorage.getItem("mall")+"\n\n";
 
 for(let i=0;i<t.rows.length;i++){
 let row=[];
@@ -144,16 +181,11 @@ csv+=row.join(",")+"\n";
 
 let a=document.createElement("a");
 a.href=URL.createObjectURL(new Blob([csv]));
-a.download="Fire_Report.csv";
+a.download="report.csv";
 a.click();
 }
 
-/* PDF */
+/* PRINT */
 function printPDF(){
 window.print();
-}
-
-/* HELP */
-function openHelp(){
-window.location="help.html";
 }
