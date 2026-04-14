@@ -1,24 +1,23 @@
+/* GLOBAL */
 body {
     margin: 0;
-    font-family: Arial;
+    font-family: Arial, sans-serif;
 }
 
-/* 🔥 Fire Theme Background */
-.login-body {
+/* 🔥 BACKGROUNDS */
+.login-body, .main-body {
     background: linear-gradient(135deg, #1a0000, #330000, #000000);
     color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
 }
 
-/* Login Box */
+/* LOGIN */
 .login-container {
-    background: rgba(0,0,0,0.8);
+    margin: 100px auto;
     padding: 40px;
-    border-radius: 12px;
+    width: 300px;
     text-align: center;
+    background: rgba(0,0,0,0.8);
+    border-radius: 10px;
     box-shadow: 0 0 20px red;
 }
 
@@ -28,18 +27,20 @@ body {
 
 input {
     display: block;
-    width: 250px;
+    width: 90%;
     margin: 10px auto;
     padding: 10px;
-    border: none;
     border-radius: 6px;
+    border: none;
 }
 
+/* BUTTON */
 button {
     background: #ff3c00;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 10px 15px;
+    margin: 5px;
     cursor: pointer;
     border-radius: 6px;
 }
@@ -48,6 +49,86 @@ button:hover {
     background: red;
 }
 
-#error {
-    color: yellow;
+/* TITLE */
+.title {
+    text-align: center;
+    padding: 20px;
+    color: #ff3c00;
+}
+
+/* CARDS (Mall + Systems) */
+.card-list div {
+    background: #222;
+    margin: 15px auto;
+    padding: 15px;
+    width: 260px;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 0 10px red;
+    text-align: center;
+}
+
+.card-list div:hover {
+    background: red;
+}
+
+/* TABLE */
+.table-container {
+    width: 95%;
+    margin: auto;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #111;
+    color: white;
+}
+
+th, td {
+    border: 1px solid #444;
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background: #8B0000;
+    cursor: pointer;
+}
+
+td {
+    background: #1a1a1a;
+}
+
+/* Editable cells */
+td[contenteditable="true"] {
+    background: #262626;
+}
+
+/* FILTERS */
+.filter-box {
+    text-align: center;
+    margin: 10px;
+}
+
+select {
+    padding: 8px;
+    border-radius: 5px;
+}
+
+/* PRINT */
+@media print {
+    button, .filter-box {
+        display: none;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+
+    table {
+        color: black;
+    }
 }
