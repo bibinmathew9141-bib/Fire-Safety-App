@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>System Data</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: black;
+      color: white;
+      text-align: center;
+    }
+
+    h2 {
+      color: red;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px;
+      background: red;
+      color: white;
+      border: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      color: black;
+    }
+
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2 id="title"></h2>
+
+<!-- Tabs -->
+<button onclick="showTab('daily')">Daily Sheet</button>
+<button onclick="showTab('monthly')">Monthly Sheet</button>
+<button onclick="showTab('yearly')">Yearly Sheet</button>
+
+<!-- DAILY -->
+<div id="daily">
+
+<button onclick="addRow()">➕ Add Row</button>
+
+<table id="table">
+  <tr>
+    <th>Sl No</th>
+    <th>Date</th>
+    <th>Tag</th>
+    <th>Location</th>
+    <th>Status</th>
+    <th>Remarks</th>
+    <th>Shift</th>
+  </tr>
+</table>
+
+</div>
+
+<!-- MONTHLY -->
+<div id="monthly" style="display:none;">
+  <h3>Monthly Data</h3>
+  <div id="monthlyData"></div>
+</div>
+
+<!-- YEARLY -->
+<div id="yearly" style="display:none;">
+  <h3>Yearly Data</h3>
+  <div id="yearlyData"></div>
+</div>
+
+<script>
+
+let mall = localStorage.getItem("mall");
+let system = localStorage.getItem("system");
+
+document.getElementById("title").innerText =
+  "🔥 " + mall + " - " + system;
+
+// SWITCH TABS
+function showTab(tab) {
+  document.getElementById("daily").style.display = "none";
+  document.getElementById("monthly").style.display = "none";
+  document.getElementById("yearly").style.display = "none";
+
+  document.getElementById(tab).style.display = "block";
+}
+
+// ADD ROW
+function addRow() {
+  let table = document.getElementById("table");
+  let rowCount = table.rows.length;
+
+  let row = table.insertRow();
+
+  row.innerHTML = `
+    <td>${rowCount}</td>
+    <td><input type="date" value="${new Date().toISOString().split('T')[0]}"></td>
+    <td><input></td>
+    <td><input></td>
+    <td><input></td>
+    <td><input></td>
+    <td><input></td>
+  `;
+}
+
+</script>
+
+</body>
+</html>
