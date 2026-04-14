@@ -99,6 +99,45 @@ const firebaseConfig = {
   measurementId: "G-HN0M947X87"
 };
 
+db.collection("records")
+  .where("mall", "==", mall)
+  .where("system", "==", system)
+  .onSnapshot((snapshot) => {
+
+    let table = document.getElementById("table");
+
+    table.innerHTML = `
+      <tr>
+        <th>Sl No</th>
+        <th>Date</th>
+        <th>Tag</th>
+        <th>Location</th>
+        <th>Status</th>
+        <th>Remarks</th>
+        <th>Shift</th>
+      </tr>
+    `;
+
+    let i = 1;
+
+    snapshot.forEach(doc => {
+      let d = doc.data();
+
+      let row = table.insertRow();
+
+      row.innerHTML = `
+        <td>${i++}</td>
+        <td>${d.date}</td>
+        <td>${d.tag}</td>
+        <td>${d.location}</td>
+        <td>${d.status}</td>
+        <td>${d.remarks}</td>
+        <td>${d.shift}</td>
+      `;
+    });
+
+  });
+
 let mall = localStorage.getItem("mall");
 let system = localStorage.getItem("system");
 
