@@ -1,4 +1,3 @@
-
 /* ================= NAVIGATION ================= */
 
 function openMall(m){
@@ -13,7 +12,7 @@ window.location="sheet.html";
 
 function openSheet(type){
 localStorage.setItem("sheet",type);
-window.location="table.html";
+location.reload();
 }
 
 /* ================= INIT ================= */
@@ -21,9 +20,8 @@ window.location="table.html";
 function initPage(){
 
 document.getElementById("mallHeader").innerText =
-localStorage.getItem("mall") || "";
+localStorage.getItem("mall") || "Tamdeen Group";
 
-/* RESET TABLE */
 document.getElementById("dataTable").innerHTML=`
 <tr>
 <th>Sl</th>
@@ -38,39 +36,29 @@ document.getElementById("dataTable").innerHTML=`
 `;
 
 load();
-
 applyMode();
-buildFilters();
-
-setTimeout(()=>{
 buildColumnFilters();
-},100);
 
 }
 
-/* ================= MODE SYSTEM (FIXED) ================= */
+/* ================= MODE ================= */
 
 function getMode(){
-return localStorage.getItem("sheet");
+return localStorage.getItem("sheet") || "daily";
 }
-
-/* ================= APPLY MODE ================= */
 
 function applyMode(){
 
 let mode=getMode();
+let btn=document.getElementById("addBtn");
 
-let addBtn=document.getElementById("addBtn");
-
-if(mode==="daily"){
-if(addBtn) addBtn.style.display="inline-block";
-}else{
-if(addBtn) addBtn.style.display="none";
+if(btn){
+btn.style.display = (mode==="daily") ? "inline-block" : "none";
 }
 
 }
 
-/* ================= ADD ROW (ONLY DAILY) ================= */
+/* ================= ADD ROW ================= */
 
 function addRow(){
 
@@ -157,7 +145,7 @@ r.innerHTML=`
 /* ================= KEY ================= */
 
 function getKey(){
-return localStorage.getItem("mall")+"_"+localStorage.getItem("system")+"_"+localStorage.getItem("sheet");
+return localStorage.getItem("mall")+"_"+getMode();
 }
 
 /* ================= DATE ================= */
@@ -170,32 +158,7 @@ let yr=String(dt.getFullYear()).slice(-2);
 return `${day}-${mon}-${yr}`;
 }
 
-/* ================= FILTERS (MONTH/YEAR SIMPLE FIX) ================= */
-
-function buildFilters(){
-
-let box=document.getElementById("monthYearBox");
-if(!box) return;
-
-box.innerHTML=`
-<button onclick="resetFilters()">All</button>
-`;
-
-}
-
-/* ================= RESET FILTER ================= */
-
-function resetFilters(){
-
-let t=document.getElementById("dataTable");
-
-for(let i=1;i<t.rows.length;i++){
-t.rows[i].style.display="";
-}
-
-}
-
-/* ================= COLUMN FILTER (EXCEL STYLE WORKING) ================= */
+/* ================= COLUMN FILTERS (EXCEL STYLE) ================= */
 
 let filters={};
 
@@ -235,8 +198,6 @@ cell.appendChild(input);
 }
 
 }
-
-/* ================= APPLY FILTER ================= */
 
 function applyFilters(){
 
