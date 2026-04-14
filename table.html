@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Data Table</title>
+    <title>Fire Safety Data</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -9,30 +9,60 @@
 
 <h2 class="title" id="mallTitle"></h2>
 
+<!-- 📅 Monthly / Yearly Buttons -->
 <div class="filter-box" id="dynamicFilters"></div>
 
+<!-- 🔧 Controls -->
 <div class="filter-box">
-    <button onclick="printPDF()">Print PDF</button>
     <button onclick="addRow()">Add Row</button>
+    <button onclick="printPDF()">Print PDF</button>
     <button onclick="openHelp()">Help</button>
 </div>
 
+<!-- 📊 TABLE -->
 <div class="table-container">
 <table id="dataTable">
 
 <tr>
     <th>Sl No</th>
-    <th>Date<br><input onkeyup="columnFilter(1,this.value)"></th>
-    <th>Tag<br><input onkeyup="columnFilter(2,this.value)"></th>
-    <th>Location<br><input onkeyup="columnFilter(3,this.value)"></th>
-    <th>Status<br><input onkeyup="columnFilter(4,this.value)"></th>
-    <th>Remarks<br><input onkeyup="columnFilter(5,this.value)"></th>
-    <th>Shift<br><input onkeyup="columnFilter(6,this.value)"></th>
+
+    <th>
+        Date<br>
+        <input type="text" placeholder="Filter" onkeyup="columnFilter(1,this.value)">
+    </th>
+
+    <th>
+        Tag No./Name<br>
+        <input type="text" placeholder="Filter" onkeyup="columnFilter(2,this.value)">
+    </th>
+
+    <th>
+        Location<br>
+        <input type="text" placeholder="Filter" onkeyup="columnFilter(3,this.value)">
+    </th>
+
+    <th>
+        Status<br>
+        <input type="text" placeholder="Filter" onkeyup="columnFilter(4,this.value)">
+    </th>
+
+    <th>
+        Remarks<br>
+        <input type="text" placeholder="Filter" onkeyup="columnFilter(5,this.value)">
+    </th>
+
+    <th>
+        Shift<br>
+        <input type="text" placeholder="Filter" onkeyup="columnFilter(6,this.value)">
+    </th>
+
+    <th>Action</th>
 </tr>
 
 </table>
 </div>
 
 <script src="script.js"></script>
+
 </body>
 </html>
