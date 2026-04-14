@@ -18,5 +18,20 @@
 </div>
 
 <script src="script.js"></script>
+
+<script>
+function login(){
+let u=document.getElementById("username").value;
+let p=document.getElementById("password").value;
+
+if(u==="Tamdeen" && p==="T@mdeen123"){
+localStorage.setItem("login","yes");
+window.location="home.html";
+}else{
+document.getElementById("error").innerText="Wrong Login";
+}
+}
+</script>
+
 </body>
 </html>
