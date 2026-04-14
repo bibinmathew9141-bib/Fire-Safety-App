@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tamdeen Fire Safety System</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: black;
+      color: white;
+      text-align: center;
+    }
+
+    input {
+      display: block;
+      margin: 10px auto;
+      padding: 10px;
+      width: 200px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      background: red;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .box {
+      margin-top: 100px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="loginPage" class="box">
+  <h2>🔥 Tamdeen Group Login</h2>
+
+  <input id="user" placeholder="User ID">
+  <input id="pass" type="password" placeholder="Password">
+
+  <button onclick="login()">Login</button>
+
+  <p id="msg"></p>
+</div>
+
+<div id="homePage" style="display:none;">
+  <h1>🔥 Tamdeen Group</h1>
+
+  <button onclick="openMall('360')">360 Mall</button>
+  <button onclick="openMall('khiran')">Khiran Mall</button>
+  <button onclick="openMall('alkout')">Al Kout Mall</button>
+</div>
+
+<script>
+function login() {
+  let u = document.getElementById("user").value;
+  let p = document.getElementById("pass").value;
+
+  if (u === "Tamdeen" && p === "T@mdeen123") {
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("homePage").style.display = "block";
+  } else {
+    document.getElementById("msg").innerText = "Wrong Login!";
+  }
+}
+
+function openMall(mall) {
+  localStorage.setItem("mall", mall);
+  alert("Selected Mall: " + mall);
+}
+</script>
+
+</body>
+</html>
