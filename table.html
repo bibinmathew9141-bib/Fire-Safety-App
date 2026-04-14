@@ -5,14 +5,16 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="main-body" onload="loadData()">
+<body class="main-body" onload="initPage()">
 
-<h2 class="title">Fire Safety Data</h2>
+<h2 class="title" id="mallTitle"></h2>
+
+<div class="filter-box" id="dynamicFilters"></div>
 
 <div class="filter-box">
-    <input type="text" id="filter" placeholder="Filter (YYYY-MM or YYYY)" onkeyup="filterData()">
     <button onclick="printPDF()">Print PDF</button>
     <button onclick="addRow()">Add Row</button>
+    <button onclick="openHelp()">Help</button>
 </div>
 
 <div class="table-container">
@@ -20,12 +22,12 @@
 
 <tr>
     <th>Sl No</th>
-    <th>Date</th>
-    <th>Tag No./Name</th>
-    <th>Location</th>
-    <th>Status</th>
-    <th>Remarks</th>
-    <th>Shift</th>
+    <th>Date<br><input onkeyup="columnFilter(1,this.value)"></th>
+    <th>Tag<br><input onkeyup="columnFilter(2,this.value)"></th>
+    <th>Location<br><input onkeyup="columnFilter(3,this.value)"></th>
+    <th>Status<br><input onkeyup="columnFilter(4,this.value)"></th>
+    <th>Remarks<br><input onkeyup="columnFilter(5,this.value)"></th>
+    <th>Shift<br><input onkeyup="columnFilter(6,this.value)"></th>
 </tr>
 
 </table>
