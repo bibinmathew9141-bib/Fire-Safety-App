@@ -16,7 +16,7 @@
     }
 
     button {
-      margin: 5px;
+      margin: 8px;
       padding: 10px;
       background: red;
       color: white;
@@ -41,7 +41,7 @@
 
 <body>
 
-<h2 id="title"></h2>
+<h2 id="title">Loading...</h2>
 
 <button onclick="addRow()">➕ Add Row</button>
 
@@ -57,13 +57,20 @@
   </tr>
 </table>
 
-<!-- FIREBASE v8 -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
 
-// 🔥 YOUR CONFIG
+let mall = localStorage.getItem("mall");
+let system = localStorage.getItem("system");
+
+// Show title safely
+document.getElementById("title").innerText =
+  "🔥 " + (mall || "Mall") + " - " + (system || "System");
+
+// Firebase config (YOUR PROVIDED)
 const firebaseConfig = {
   apiKey: "AIzaSyCIbZZvMeMxO2kbHCkWunMIfDRgCz_OngE",
   authDomain: "fire-safety-app-5b93f.firebaseapp.com",
@@ -73,20 +80,14 @@ const firebaseConfig = {
   appId: "1:641973984641:web:3829c7001573357c4a1c80"
 };
 
-// INIT
+// INIT FIREBASE
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// GET DATA
-let mall = localStorage.getItem("mall");
-let system = localStorage.getItem("system");
-
-document.getElementById("title").innerText =
-  "🔥 " + mall + " - " + system;
-
-// ADD ROW
+// 🔥 ADD DATA
 function addRow() {
-  db.collection("records").add({
+
+  let data = {
     mall: mall,
     system: system,
     date: new Date().toISOString().split('T')[0],
@@ -95,16 +96,18 @@ function addRow() {
     status: "OK",
     remarks: "Working",
     shift: "Day"
-  })
-  .then(() => {
-    alert("Data Saved!");
-  })
-  .catch((error) => {
-    alert("Error: " + error);
-  });
+  };
+
+  db.collection("records").add(data)
+    .then(() => {
+      alert("Data Saved Successfully!");
+    })
+    .catch((error) => {
+      alert("Error: " + error);
+    });
 }
 
-// LOAD DATA
+// 🔥 REALTIME LOAD
 db.collection("records")
   .where("mall", "==", mall)
   .where("system", "==", system)
