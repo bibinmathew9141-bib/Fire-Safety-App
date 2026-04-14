@@ -1,53 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Tamdeen Group</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-body{
-margin:0;
-font-family:Arial;
-background:linear-gradient(#0b0f14,#111827);
-color:white;
-text-align:center;
-}
-
-h1{
-color:#ff4d4d;
-margin-top:30px;
-}
-
-.card{
-margin:15px auto;
-width:80%;
-padding:20px;
-background:#1f2937;
-border-radius:10px;
-font-size:20px;
-cursor:pointer;
-}
-
-.card:hover{
-background:#374151;
-}
-</style>
+  <title>Tamdeen Fire System - Login</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+<body class="fire-bg">
 
-<body>
+  <div class="login-box">
+    <h1 class="title">🔥 Tamdeen Group</h1>
+    <h3>Fire Safety Management System</h3>
 
-<h1>🔥 Tamdeen Group</h1>
+    <input type="text" id="userid" placeholder="USER ID">
+    <input type="password" id="password" placeholder="PASSWORD">
 
-<div class="card" onclick="go('360 Mall')">360 Mall</div>
-<div class="card" onclick="go('Khiran Mall')">Khiran Mall</div>
-<div class="card" onclick="go('Alkout Mall')">Alkout Mall</div>
+    <button onclick="login()">Login</button>
 
-<script>
-function go(mall){
-localStorage.setItem("mall",mall);
-window.location="system.html";
-}
-</script>
+    <p id="error" class="error"></p>
+  </div>
 
+  <script src="app.js"></script>
 </body>
 </html>
