@@ -7,23 +7,16 @@
 
 <body class="main-body" onload="initPage()">
 
-<h2 class="title">
-🔥 Tamdeen Group <br>
-🏢 <span id="mallHeader"></span>
-</h2>
+<h2 class="title">🏢 <span id="mallHeader"></span></h2>
 
-<div class="filter-box" id="dynamicFilters"></div>
+<div class="filter-box" id="monthYearBox"></div>
 
 <div class="filter-box">
-<button onclick="goBack()">⬅ Back</button>
-<button onclick="goHome()">🏠 Home</button>
-</div>
 
-<div class="filter-box">
-<button onclick="addRow()">➕ Add Row</button>
-<button onclick="exportExcel()">📊 Save Excel</button>
+<button onclick="addRow()" id="addBtn">➕ Add Row</button>
+<button onclick="exportExcel()">📊 Excel</button>
 <button onclick="printPDF()">🖨 PDF</button>
-<button onclick="openHelp()">❓ Help</button>
+
 </div>
 
 <div class="table-container">
@@ -32,13 +25,13 @@
 
 <tr>
 <th>Sl</th>
-<th>Date<br><input onkeyup="colFilter(1,this.value)"></th>
-<th>Tag<br><input onkeyup="colFilter(2,this.value)"></th>
-<th>Location<br><input onkeyup="colFilter(3,this.value)"></th>
-<th>Status<br><input onkeyup="colFilter(4,this.value)"></th>
-<th>Remarks<br><input onkeyup="colFilter(5,this.value)"></th>
-<th>Shift<br><input onkeyup="colFilter(6,this.value)"></th>
-<th>Action</th>
+<th>Date</th>
+<th>Tag</th>
+<th>Location</th>
+<th>Status</th>
+<th>Remarks</th>
+<th>Shift</th>
+<th id="actionHead">Action</th>
 </tr>
 
 </table>
