@@ -23,15 +23,15 @@ function initPage(){
 document.getElementById("mallHeader").innerText =
 localStorage.getItem("mall") || "Tamdeen Group";
 
-renderTable();
+render();
 applyMode();
-buildColumnFilters();
+buildFilters();
 
 }
 
-/* ================= KEY ================= */
+/* ================= STORAGE KEY ================= */
 
-function getBaseKey(){
+function getKey(){
 return localStorage.getItem("mall") + "_data";
 }
 
@@ -41,25 +41,32 @@ function getMode(){
 return localStorage.getItem("sheet") || "daily";
 }
 
-/* ================= LOAD DATA ================= */
+/* ================= GET DATA ================= */
 
 function getData(){
-return JSON.parse(localStorage.getItem(getBaseKey()) || "[]");
+return JSON.parse(localStorage.getItem(getKey()) || "[]");
 }
 
-/* ================= RENDER MAIN ENGINE ================= */
+/* ================= SAVE DATA ================= */
 
-function renderTable(){
+function saveData(data){
+localStorage.setItem(getKey(),JSON.stringify(data));
+}
+
+/* ================= RENDER ENGINE ================= */
+
+function render(){
 
 let mode=getMode();
 let data=getData();
 
 let table=document.getElementById("dataTable");
 
-/* RESET TABLE */
+/* RESET */
 table.innerHTML="";
 
-/* DAILY TABLE */
+/* ================= DAILY ================= */
+
 if(mode==="daily"){
 
 table.innerHTML=`
@@ -94,7 +101,8 @@ r.innerHTML=`
 
 }
 
-/* MONTHLY VIEW */
+/* ================= MONTHLY ================= */
+
 if(mode==="monthly"){
 
 table.innerHTML=`
@@ -109,10 +117,13 @@ let map={};
 
 data.forEach(d=>{
 
-let dt=new Date(d.date);
-if(isNaN(dt)) return;
+if(!d.date) return;
 
-let key = dt.toLocaleString('en-US',{month:'short',year:'numeric'});
+let parts=d.date.split("-");
+if(parts.length<2) return;
+
+/* SAFE MONTH KEY */
+let key = parts[1] + "-" + parts[2];
 
 map[key]=(map[key]||0)+1;
 
@@ -134,7 +145,8 @@ r.innerHTML=`
 
 }
 
-/* YEARLY VIEW */
+/* ================= YEARLY ================= */
+
 if(mode==="yearly"){
 
 table.innerHTML=`
@@ -149,12 +161,14 @@ let map={};
 
 data.forEach(d=>{
 
-let dt=new Date(d.date);
-if(isNaN(dt)) return;
+if(!d.date) return;
 
-let key = dt.getFullYear();
+let parts=d.date.split("-");
+if(parts.length<3) return;
 
-map[key]=(map[key]||0)+1;
+let year = parts[2];
+
+map[year]=(map[year]||0)+1;
 
 });
 
@@ -176,7 +190,7 @@ r.innerHTML=`
 
 }
 
-/* ================= APPLY MODE ================= */
+/* ================= MODE APPLY ================= */
 
 function applyMode(){
 
@@ -205,9 +219,8 @@ remarks:"",
 shift:""
 });
 
-localStorage.setItem(getBaseKey(),JSON.stringify(data));
-
-renderTable();
+saveData(data);
+render();
 
 }
 
@@ -221,71 +234,36 @@ let index=row.rowIndex-1;
 let data=getData();
 data.splice(index,1);
 
-localStorage.setItem(getBaseKey(),JSON.stringify(data));
-
-renderTable();
-
-}
-
-/* ================= SAVE INLINE EDIT ================= */
-
-document.addEventListener("input",function(e){
-
-if(getMode()!=="daily") return;
-
-let table=document.getElementById("dataTable");
-
-if(!table) return;
-
-let rows=table.rows;
-let data=getData();
-
-for(let i=1;i<rows.length;i++){
-
-let c=rows[i].cells;
-
-if(data[i-1]){
-
-data[i-1]={
-date:c[1].innerText,
-tag:c[2].innerText,
-location:c[3].innerText,
-status:c[4].innerText,
-remarks:c[5].innerText,
-shift:c[6].innerText
-};
+saveData(data);
+render();
 
 }
 
-}
-
-localStorage.setItem(getBaseKey(),JSON.stringify(data));
-
-});
-
-/* ================= DATE FORMAT ================= */
+/* ================= FORMAT DATE ================= */
 
 function formatDate(d){
+
 let dt=new Date(d);
+
 let day=String(dt.getDate()).padStart(2,'0');
 let mon=dt.toLocaleString('en-US',{month:'short'});
 let yr=String(dt.getFullYear()).slice(-2);
+
 return `${day}-${mon}-${yr}`;
 }
 
-/* ================= COLUMN FILTER ================= */
+/* ================= COLUMN FILTER (SIMPLE + SAFE) ================= */
 
 let filters={};
 
-function buildColumnFilters(){
+function buildFilters(){
+
+if(getMode()!=="daily") return;
 
 let table=document.getElementById("dataTable");
 
 let old=document.getElementById("filterRow");
 if(old) old.remove();
-
-/* only for DAILY */
-if(getMode()!=="daily") return;
 
 let row=table.insertRow(1);
 row.id="filterRow";
