@@ -1,41 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Tamdeen Group System</title>
+<title>Tamdeen System</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
 
 <style>
 body{
+margin:0;
 font-family:Arial;
 background:#0b0f14;
 color:white;
-margin:0;
 }
 
 .header{
 text-align:center;
 padding:10px;
-background:#111826;
-font-size:18px;
+background:#111827;
 font-weight:bold;
+color:#ff4d4d;
 }
 
-.btnBar{
+.btns{
 text-align:center;
 margin:10px;
 }
 
 button{
 padding:8px 12px;
-margin:3px;
+margin:4px;
 border:none;
 border-radius:6px;
 cursor:pointer;
+background:#1f2937;
+color:white;
 }
 
 button:hover{
-opacity:0.8;
+background:#374151;
 }
 
 table{
@@ -57,42 +58,29 @@ background:#1f2937;
 
 input{
 width:90%;
-padding:4px;
 font-size:12px;
 }
 </style>
-
 </head>
 
-<body onload="initPage()">
+<body onload="init()">
 
-<!-- HEADER -->
-<div class="header" id="mallHeader">
-Loading...
+<div class="header" id="title"></div>
+
+<div class="btns">
+<button onclick="setMode('daily')">Daily</button>
+<button onclick="setMode('monthly')">Monthly</button>
+<button onclick="setMode('yearly')">Yearly</button>
 </div>
 
-<!-- MODE BUTTONS -->
-<div class="btnBar">
-
-<button onclick="openSheet('daily')">Daily</button>
-<button onclick="openSheet('monthly')">Monthly</button>
-<button onclick="openSheet('yearly')">Yearly</button>
-
+<div class="btns">
+<button onclick="addRow()" id="addBtn">+ Add Row</button>
+<button onclick="exportCSV()">Excel</button>
+<button onclick="window.print()">PDF</button>
 </div>
 
-<!-- ACTION BUTTONS -->
-<div class="btnBar">
+<table id="table"></table>
 
-<button id="addBtn" onclick="addRow()">+ Add Row</button>
-<button onclick="exportExcel()">Excel</button>
-<button onclick="printPDF()">PDF</button>
-
-</div>
-
-<!-- TABLE -->
-<table id="dataTable"></table>
-
-<!-- SCRIPT -->
 <script src="script.js"></script>
 
 </body>
