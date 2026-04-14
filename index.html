@@ -8,14 +8,14 @@
 body{
 margin:0;
 font-family:Arial;
-background:linear-gradient(180deg,#0b0f14,#111827);
+background:linear-gradient(#0b0f14,#111827);
 color:white;
 text-align:center;
 }
 
 h1{
-margin-top:30px;
 color:#ff4d4d;
+margin-top:30px;
 }
 
 .card{
@@ -26,12 +26,10 @@ background:#1f2937;
 border-radius:10px;
 font-size:20px;
 cursor:pointer;
-transition:0.3s;
 }
 
 .card:hover{
 background:#374151;
-transform:scale(1.03);
 }
 </style>
 </head>
@@ -40,12 +38,12 @@ transform:scale(1.03);
 
 <h1>🔥 Tamdeen Group</h1>
 
-<div class="card" onclick="openMall('360 Mall')">360 Mall</div>
-<div class="card" onclick="openMall('Khiran Mall')">Khiran Mall</div>
-<div class="card" onclick="openMall('Alkout Mall')">Alkout Mall</div>
+<div class="card" onclick="go('360 Mall')">360 Mall</div>
+<div class="card" onclick="go('Khiran Mall')">Khiran Mall</div>
+<div class="card" onclick="go('Alkout Mall')">Alkout Mall</div>
 
 <script>
-function openMall(mall){
+function go(mall){
 localStorage.setItem("mall",mall);
 window.location="system.html";
 }
