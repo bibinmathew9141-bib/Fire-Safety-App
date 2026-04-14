@@ -1,35 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Login</title>
-<link rel="stylesheet" href="style.css">
+<title>Tamdeen Group</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+font-family:Arial;
+background:#0b0f14;
+color:white;
+text-align:center;
+}
+
+h1{
+margin-top:20px;
+}
+
+.card{
+background:#1f2937;
+margin:15px;
+padding:20px;
+border-radius:10px;
+cursor:pointer;
+font-size:18px;
+}
+
+.card:hover{
+background:#374151;
+}
+</style>
 </head>
 
-<body class="login-body">
+<body>
 
-<div class="login-container">
-<h1>🔥 Tamdeen Group</h1>
+<h1>Tamdeen Group</h1>
 
-<input id="username" placeholder="User ID">
-<input type="password" id="password" placeholder="Password">
-
-<button onclick="login()">Login</button>
-<p id="error"></p>
-</div>
-
-<script src="script.js"></script>
+<div class="card" onclick="openMall('360 Mall')">360 Mall</div>
+<div class="card" onclick="openMall('Khiran Mall')">Khiran Mall</div>
+<div class="card" onclick="openMall('Alkout Mall')">Alkout Mall</div>
 
 <script>
-function login(){
-let u=document.getElementById("username").value;
-let p=document.getElementById("password").value;
-
-if(u==="Tamdeen" && p==="T@mdeen123"){
-localStorage.setItem("login","yes");
-window.location="home.html";
-}else{
-document.getElementById("error").innerText="Wrong Login";
-}
+function openMall(mall){
+localStorage.setItem("mall",mall);
+window.location="system.html";
 }
 </script>
 
