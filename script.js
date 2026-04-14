@@ -1,3 +1,4 @@
+
 /* ================= NAVIGATION ================= */
 
 function openMall(m){
@@ -10,13 +11,9 @@ localStorage.setItem("system",s);
 window.location="sheet.html";
 }
 
-/* ================= OPEN SHEET TYPE ================= */
-
 function openSheet(type){
-
 localStorage.setItem("sheet",type);
 window.location="table.html";
-
 }
 
 /* ================= INIT ================= */
@@ -41,23 +38,35 @@ document.getElementById("dataTable").innerHTML=`
 `;
 
 load();
+
+setTimeout(()=>{
 applyMode();
-addColumnFilters();
+buildColumnFilters();
+},100);
 
 }
 
-/* ================= MODE CONTROL (FIXED) ================= */
+/* ================= MODE FIX (IMPORTANT) ================= */
+
+function getMode(){
+return localStorage.getItem("sheet");
+}
+
+/* ================= APPLY MODE ================= */
 
 function applyMode(){
 
-let type=localStorage.getItem("sheet");
+let mode=getMode();
 
 let addBtn=document.getElementById("addBtn");
+let action=document.getElementById("actionHead");
 
-if(type==="daily"){
+if(mode==="daily"){
 if(addBtn) addBtn.style.display="inline-block";
+if(action) action.style.display="table-cell";
 }else{
 if(addBtn) addBtn.style.display="none";
+if(action) action.style.display="none";
 }
 
 }
@@ -66,8 +75,7 @@ if(addBtn) addBtn.style.display="none";
 
 function addRow(){
 
-let type=localStorage.getItem("sheet");
-if(type!=="daily") return;
+if(getMode()!=="daily") return;
 
 let t=document.getElementById("dataTable");
 
@@ -106,14 +114,14 @@ for(let i=1;i<t.rows.length;i++){
 
 let c=t.rows[i].cells;
 
-data.push([
-c[1].innerText,
-c[2].innerText,
-c[3].innerText,
-c[4].innerText,
-c[5].innerText,
-c[6].innerText
-]);
+data.push({
+date:c[1].innerText,
+tag:c[2].innerText,
+location:c[3].innerText,
+status:c[4].innerText,
+remarks:c[5].innerText,
+shift:c[6].innerText
+});
 
 }
 
@@ -134,12 +142,12 @@ let r=t.insertRow();
 
 r.innerHTML=`
 <td>${i+1}</td>
-<td contenteditable>${d[0]}</td>
-<td contenteditable>${d[1]}</td>
-<td contenteditable>${d[2]}</td>
-<td contenteditable>${d[3]}</td>
-<td contenteditable>${d[4]}</td>
-<td contenteditable>${d[5]}</td>
+<td contenteditable>${d.date}</td>
+<td contenteditable>${d.tag}</td>
+<td contenteditable>${d.location}</td>
+<td contenteditable>${d.status}</td>
+<td contenteditable>${d.remarks}</td>
+<td contenteditable>${d.shift}</td>
 <td><button onclick="del(this)">X</button></td>
 `;
 
@@ -150,42 +158,38 @@ r.innerHTML=`
 /* ================= KEY ================= */
 
 function getKey(){
-return localStorage.getItem("mall")+"_"+localStorage.getItem("system")+"_"+localStorage.getItem("sheet");
+return localStorage.getItem("mall")+"_"+localStorage.getItem("system");
 }
 
-/* ================= DATE FORMAT ================= */
+/* ================= DATE ================= */
 
 function formatDate(d){
-
 let dt=new Date(d);
-
 let day=String(dt.getDate()).padStart(2,'0');
 let mon=dt.toLocaleString('en-US',{month:'short'});
 let yr=String(dt.getFullYear()).slice(-2);
-
 return `${day}-${mon}-${yr}`;
-
 }
 
-/* ================= COLUMN FILTER ================= */
+/* ================= COLUMN FILTERS (EXCEL STYLE FIXED) ================= */
 
-let activeFilters={};
+let filters={};
 
-function addColumnFilters(){
+function buildColumnFilters(){
 
 let table=document.getElementById("dataTable");
 
 let old=document.getElementById("filterRow");
 if(old) old.remove();
 
-let filterRow=table.insertRow(1);
-filterRow.id="filterRow";
+let row=table.insertRow(1);
+row.id="filterRow";
 
 let cols=table.rows[0].cells.length;
 
 for(let i=0;i<cols;i++){
 
-let cell=filterRow.insertCell(i);
+let cell=row.insertCell(i);
 
 if(i===0 || i===cols-1){
 cell.innerHTML="";
@@ -197,7 +201,7 @@ input.placeholder="Filter";
 input.style.width="90%";
 
 input.oninput=function(){
-activeFilters[i]=this.value.toLowerCase();
+filters[i]=this.value.toLowerCase();
 applyFilters();
 };
 
@@ -216,9 +220,9 @@ for(let i=2;i<table.rows.length;i++){
 let row=table.rows[i];
 let show=true;
 
-for(let col in activeFilters){
+for(let col in filters){
 
-let val=activeFilters[col];
+let val=filters[col];
 if(!val) continue;
 
 let cell=row.cells[col];
@@ -237,7 +241,7 @@ row.style.display=show?"":"none";
 
 }
 
-/* ================= EXCEL EXPORT ================= */
+/* ================= EXPORT ================= */
 
 function exportExcel(){
 
