@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fire Safety System</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #000;
+      color: white;
+      text-align: center;
+    }
+
+    h2 { color: red; }
+
+    input {
+      width: 80%;
+      padding: 10px;
+      margin: 5px;
+    }
+
+    button {
+      padding: 10px;
+      background: red;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    table {
+      width: 100%;
+      background: white;
+      color: black;
+      margin-top: 10px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+    }
+
+    .tab {
+      display: none;
+    }
+
+    .active {
+      display: block;
+    }
+
+    .menu button {
+      width: 90%;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2 id="title">System</h2>
+
+<!-- TABS -->
+<div class="menu">
+  <button onclick="showTab('daily')">Daily Sheet</button>
+  <button onclick="showTab('monthly')">Monthly Sheet</button>
+  <button onclick="showTab('yearly')">Yearly Sheet</button>
+</div>
+
+<!-- DAILY -->
+<div id="daily" class="tab active">
+
+  <h3>Daily Entry</h3>
+
+  <input id="tag" placeholder="Tag / Name"><br>
+  <input id="location" placeholder="Location"><br>
+  <input id="status" placeholder="Status"><br>
+  <input id="remarks" placeholder="Remarks"><br>
+  <input id="shift" placeholder="Shift"><br>
+
+  <button onclick="addRow()">➕ Add Row</button>
+
+  <table id="dailyTable">
+    <tr>
+      <th>Sl No</th>
+      <th>Date</th>
+      <th>Tag</th>
+      <th>Location</th>
+      <th>Status</th>
+      <th>Remarks</th>
+      <th>Shift</th>
+    </tr>
+  </table>
+
+</div>
+
+<!-- MONTHLY -->
+<div id="monthly" class="tab">
+  <h3>Monthly Data</h3>
+  <div id="monthlyData"></div>
+</div>
+
+<!-- YEARLY -->
+<div id="yearly" class="tab">
+  <h3>Yearly Data</h3>
+  <div id="yearlyData"></div>
+</div>
+
+<script>
+
+// TITLE (from previous page if available)
+let mall = localStorage.getItem("mall") || "Tamdeen Group";
+let system = localStorage.getItem("system") || "System";
+
+document.getElementById("title").innerText =
+mall + " - " + system;
+
+// LOAD DATA
+let records = JSON.parse(localStorage.getItem("fireData")) || [];
+
+// SAVE DATA
+function saveData() {
+  localStorage.setItem("fireData", JSON.stringify(records));
+}
+
+// ADD ROW
+function addRow() {
+
+  let tag = document.getElementById("tag").value;
+  let location = document.getElementById("location").value;
+  let status = document.getElementById("status").value;
+  let remarks = document.getElementById("remarks").value;
+  let shift = document.getElementById("shift").value;
+
+  if (!tag || !location || !status) {
+    alert("Fill required fields");
+    return;
+  }
+
+  let d = new Date();
+  let date = d.toISOString().split("T")[0];
+
+  records.push({
+    date: date,
+    month: d.getFullYear() + "-" + (d.getMonth()+1),
+    year: d.getFullYear(),
+    tag,
+    location,
+    status,
+    remarks,
+    shift
+  });
+
+  saveData();
+  renderAll();
+
+  document.getElementById("tag").value = "";
+  document.getElementById("location").value = "";
+  document.getElementById("status").value = "";
+  document.getElementById("remarks").value = "";
+  document.getElementById("shift").value = "";
+}
+
+// RENDER DAILY
+function renderDaily() {
+
+  let table = document.getElementById("dailyTable");
+
+  table.innerHTML = `
+    <tr>
+      <th>Sl No</th>
+      <th>Date</th>
+      <th>Tag</th>
+      <th>Location</th>
+      <th>Status</th>
+      <th>Remarks</th>
+      <th>Shift</th>
+    </tr>
+  `;
+
+  records.forEach((r, i) => {
+
+    table.innerHTML += `
+      <tr>
+        <td>${i+1}</td>
+        <td>${r.date}</td>
+        <td>${r.tag}</td>
+        <td>${r.location}</td>
+        <td>${r.status}</td>
+        <td>${r.remarks}</td>
+        <td>${r.shift}</td>
+      </tr>
+    `;
+  });
+}
+
+// MONTHLY
+function renderMonthly() {
+
+  let div = document.getElementById("monthlyData");
+  div.innerHTML = "";
+
+  let grouped = {};
+
+  records.forEach(r => {
+    if (!grouped[r.month]) grouped[r.month] = [];
+    grouped[r.month].push(r);
+  });
+
+  for (let m in grouped) {
+    div.innerHTML += <h4>${m} (${grouped[m].length})</h4>;
+  }
+}
+
+// YEARLY
+function renderYearly() {
+
+  let div = document.getElementById("yearlyData");
+  div.innerHTML = "";
+
+  let grouped = {};
+
+  records.forEach(r => {
+    if (!grouped[r.year]) grouped[r.year] = [];
+    grouped[r.year].push(r);
+  });
+
+  for (let y in grouped) {
+    div.innerHTML += <h4>${y} (${grouped[y].length})</h4>;
+  }
+}
+
+// TAB SWITCH
+function showTab(tab) {
+
+  document.getElementById("daily").classList.remove("active");
+  document.getElementById("monthly").classList.remove("active");
+  document.getElementById("yearly").classList.remove("active");
+
+  document.getElementById(tab).classList.add("active");
+}
+
+// INIT
+function renderAll() {
+  renderDaily();
+  renderMonthly();
+  renderYearly();
+}
+
+renderAll();
+
+</script>
+
+</body>
+</html>
