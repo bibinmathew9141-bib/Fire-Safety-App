@@ -16,14 +16,14 @@ localStorage.setItem("sheet",t);
 window.location="table.html";
 }
 
-/* ================= INIT ================= */
+/* ================= INIT PAGE ================= */
 
 function initPage(){
 
 document.getElementById("mallHeader").innerText =
-localStorage.getItem("mall");
+localStorage.getItem("mall") || "";
 
-/* RESET TABLE */
+/* RESET TABLE STRUCTURE */
 document.getElementById("dataTable").innerHTML=`
 <tr>
 <th>Sl</th>
@@ -40,7 +40,11 @@ document.getElementById("dataTable").innerHTML=`
 load();
 applyMode();
 generateFilters();
+
+/* ⭐ IMPORTANT: FILTERS MUST BE LAST */
+setTimeout(()=>{
 addColumnFilters();
+},50);
 
 }
 
@@ -52,10 +56,12 @@ let type=localStorage.getItem("sheet");
 
 if(type==="daily"){
 document.getElementById("addBtn").style.display="inline-block";
-document.getElementById("actionHead").style.display="table-cell";
+document.getElementById("actionHead")?.style && (document.getElementById("actionHead").style.display="table-cell");
 }else{
 document.getElementById("addBtn").style.display="none";
+if(document.getElementById("actionHead")){
 document.getElementById("actionHead").style.display="none";
+}
 }
 
 }
@@ -158,7 +164,11 @@ r.innerHTML=`
 /* ================= KEY ================= */
 
 function getKey(){
-return localStorage.getItem("mall")+"_"+localStorage.getItem("system")+"_"+localStorage.getItem("sheet");
+return (
+localStorage.getItem("mall") + "_" +
+localStorage.getItem("system") + "_" +
+localStorage.getItem("sheet")
+);
 }
 
 /* ================= MONTH + YEAR FILTER ================= */
@@ -201,12 +211,11 @@ box.appendChild(b);
 
 }
 
-/* ================= SAFE DATE PARSE ================= */
+/* ================= SAFE DATE PARSER ================= */
 
 function parseDate(str){
 
 let parts=str.split("-");
-
 if(parts.length<3) return null;
 
 let day=parts[0];
@@ -215,9 +224,7 @@ let yr="20"+parts[2];
 
 let date=new Date(`${mon} ${day}, ${yr}`);
 
-if(isNaN(date)) return null;
-
-return date;
+return isNaN(date)?null:date;
 
 }
 
@@ -257,33 +264,43 @@ t.rows[i].style.display=(d.getFullYear()==y)?"":"none";
 
 }
 
-/* ================= COLUMN FILTERS (EXCEL STYLE) ================= */
+/* ================= COLUMN FILTERS (FIXED 100%) ================= */
 
 function addColumnFilters(){
 
 let table=document.getElementById("dataTable");
 
+/* remove old filter row */
 let old=document.getElementById("filterRow");
 if(old) old.remove();
 
 let filterRow=table.insertRow(1);
 filterRow.id="filterRow";
 
-for(let i=0;i<table.rows[0].cells.length;i++){
+let cols=table.rows[0].cells.length;
+
+for(let i=0;i<cols;i++){
 
 let cell=filterRow.insertCell(i);
 
-if(i===0 || i===table.rows[0].cells.length-1){
+if(i===0 || i===cols-1){
 cell.innerHTML="";
 continue;
 }
 
-cell.innerHTML=`
-<input type="text"
-placeholder="Filter"
-onkeyup="filterColumn(${i},this.value)"
-style="width:90%;padding:3px;">
-`;
+let input=document.createElement("input");
+input.type="text";
+input.placeholder="Filter";
+
+input.style.width="90%";
+input.style.padding="3px";
+input.style.boxSizing="border-box";
+
+input.addEventListener("keyup",function(){
+filterColumn(i,this.value);
+});
+
+cell.appendChild(input);
 
 }
 
@@ -304,7 +321,8 @@ if(!cell) continue;
 
 let text=cell.innerText.toLowerCase();
 
-table.rows[i].style.display=text.includes(value)?"":"none";
+table.rows[i].style.display=
+text.includes(value) ? "" : "none";
 
 }
 
