@@ -82,8 +82,22 @@
   <h3>Yearly Data</h3>
   <div id="yearlyData"></div>
 </div>
-
+  
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+  
 <script>
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCIbZZvMeMxO2kbHCkWunMIfDRgCz_OngE",
+  authDomain: "fire-safety-app-5b93f.firebaseapp.com",
+  databaseURL: "https://fire-safety-app-5b93f-default-rtdb.firebaseio.com",
+  projectId: "fire-safety-app-5b93f",
+  storageBucket: "fire-safety-app-5b93f.firebasestorage.app",
+  messagingSenderId: "641973984641",
+  appId: "1:641973984641:web:3829c7001573357c4a1c80",
+  measurementId: "G-HN0M947X87"
+};
 
 let mall = localStorage.getItem("mall");
 let system = localStorage.getItem("system");
