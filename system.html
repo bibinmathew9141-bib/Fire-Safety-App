@@ -11,9 +11,7 @@
       text-align: center;
     }
 
-    h2 {
-      color: red;
-    }
+    h2 { color: red; }
 
     button {
       margin: 5px;
@@ -30,19 +28,14 @@
       width: 80%;
     }
 
-    .tab {
-      display: none;
-    }
-
-    .active {
-      display: block;
-    }
+    .tab { display: none; }
+    .active { display: block; }
 
     table {
       width: 100%;
-      border-collapse: collapse;
       background: white;
       color: black;
+      border-collapse: collapse;
       margin-top: 10px;
     }
 
@@ -58,14 +51,13 @@
 <h2 id="title"></h2>
 
 <button onclick="showTab('daily')">Daily Sheet</button>
-<button onclick="showTab('monthly')">Monthly</button>
-<button onclick="showTab('yearly')">Yearly</button>
+<button onclick="showTab('monthly')">Monthly Sheet</button>
+<button onclick="showTab('yearly')">Yearly Sheet</button>
 
+<!-- DAILY -->
 <div id="daily" class="tab active">
 
-  <h3>Daily Entry</h3>
-
-  <input id="tag" placeholder="Tag No / Name"><br>
+  <input id="tag" placeholder="Tag No"><br>
   <input id="location" placeholder="Location"><br>
   <input id="status" placeholder="Status"><br>
   <input id="remarks" placeholder="Remarks"><br>
@@ -73,7 +65,7 @@
 
   <button onclick="addRow()">➕ Add Row</button>
 
-  <table id="table">
+  <table id="dailyTable">
     <tr>
       <th>Sl No</th>
       <th>Date</th>
@@ -87,12 +79,16 @@
 
 </div>
 
+<!-- MONTHLY -->
 <div id="monthly" class="tab">
-  <h3>Monthly Sheet (Next Step)</h3>
+  <h3>Monthly Reports</h3>
+  <div id="monthlyList"></div>
 </div>
 
+<!-- YEARLY -->
 <div id="yearly" class="tab">
-  <h3>Yearly Sheet (Next Step)</h3>
+  <h3>Yearly Reports</h3>
+  <div id="yearlyList"></div>
 </div>
 
 <script>
@@ -104,13 +100,60 @@ let system = localStorage.getItem("system") || "System";
 document.getElementById("title").innerText =
   mall + " - " + system;
 
-// LOAD SAVED DATA
+// LOAD DATA
 let records = JSON.parse(localStorage.getItem("records")) || [];
 
-// SHOW TABLE
-function renderTable() {
+// SAVE FUNCTION
+function saveData() {
+  localStorage.setItem("records", JSON.stringify(records));
+}
 
-  let table = document.getElementById("table");
+// ADD ROW
+function addRow() {
+
+  let tag = document.getElementById("tag").value;
+  let location = document.getElementById("location").value;
+  let status = document.getElementById("status").value;
+  let remarks = document.getElementById("remarks").value;
+  let shift = document.getElementById("shift").value;
+
+  if (!tag || !location || !status) {
+    alert("Fill required fields");
+    return;
+  }
+
+  let dateObj = new Date();
+  let date = dateObj.toISOString().split('T')[0];
+  let monthKey = dateObj.getFullYear() + "-" + (dateObj.getMonth()+1);
+  let yearKey = dateObj.getFullYear();
+
+  records.push({
+    date,
+    monthKey,
+    yearKey,
+    tag,
+    location,
+    status,
+    remarks,
+    shift
+  });
+
+  saveData();
+
+  renderAll();
+
+  // clear
+  document.getElementById("tag").value = "";
+  document.getElementById("location").value = "";
+  document.getElementById("status").value = "";
+  document.getElementById("remarks").value = "";
+  document.getElementById("shift").value = "";
+}
+
+// RENDER DAILY
+function renderDaily() {
+
+  let table = document.getElementById("dailyTable");
 
   table.innerHTML = `
     <tr>
@@ -125,11 +168,9 @@ function renderTable() {
   `;
 
   records.forEach((d, i) => {
-
     let row = table.insertRow();
-
     row.innerHTML = `
-      <td>${i + 1}</td>
+      <td>${i+1}</td>
       <td>${d.date}</td>
       <td>${d.tag}</td>
       <td>${d.location}</td>
@@ -140,55 +181,62 @@ function renderTable() {
   });
 }
 
-// INITIAL LOAD
-renderTable();
+// RENDER MONTHLY
+function renderMonthly() {
 
-// ADD ROW
-function addRow() {
+  let div = document.getElementById("monthlyList");
 
-  let tag = document.getElementById("tag").value;
-  let location = document.getElementById("location").value;
-  let status = document.getElementById("status").value;
-  let remarks = document.getElementById("remarks").value;
-  let shift = document.getElementById("shift").value;
+  let months = {};
 
-  if (!tag || !location || !status) {
-    alert("Please fill Tag, Location, Status");
-    return;
-  }
+  records.forEach(r => {
+    if (!months[r.monthKey]) months[r.monthKey] = [];
+    months[r.monthKey].push(r);
+  });
 
-  let data = {
-    date: new Date().toISOString().split('T')[0],
-    tag: tag,
-    location: location,
-    status: status,
-    remarks: remarks,
-    shift: shift
-  };
+  div.innerHTML = "";
 
-  records.push(data);
+  Object.keys(months).forEach(m => {
+    div.innerHTML += <h4>${m}</h4>;
+  });
+}
 
-  localStorage.setItem("records", JSON.stringify(records));
+// RENDER YEARLY
+function renderYearly() {
 
-  renderTable();
+  let div = document.getElementById("yearlyList");
 
-  // clear inputs
-  document.getElementById("tag").value = "";
-  document.getElementById("location").value = "";
-  document.getElementById("status").value = "";
-  document.getElementById("remarks").value = "";
-  document.getElementById("shift").value = "";
+  let years = {};
+
+  records.forEach(r => {
+    if (!years[r.yearKey]) years[r.yearKey] = [];
+    years[r.yearKey].push(r);
+  });
+
+  div.innerHTML = "";
+
+  Object.keys(years).forEach(y => {
+    div.innerHTML += <h4>${y}</h4>;
+  });
+}
+
+// RENDER ALL
+function renderAll() {
+  renderDaily();
+  renderMonthly();
+  renderYearly();
 }
 
 // TABS
 function showTab(tab) {
-
   document.getElementById("daily").classList.remove("active");
   document.getElementById("monthly").classList.remove("active");
   document.getElementById("yearly").classList.remove("active");
 
   document.getElementById(tab).classList.add("active");
 }
+
+// INIT
+renderAll();
 
 </script>
 
