@@ -1,76 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Tamdeen Fire Safety System</title>
+<title>Fire Safety Login</title>
 
-  <style>
-    body {
-      font-family: Arial;
-      background: black;
-      color: white;
-      text-align: center;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: radial-gradient(#2b0000, #000);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
 
-    input {
-      display: block;
-      margin: 10px auto;
-      padding: 10px;
-      width: 200px;
-    }
+.box {
+  background: #111;
+  padding: 30px;
+  border-radius: 10px;
+  width: 300px;
+  box-shadow: 0 0 20px red;
+  text-align: center;
+}
 
-    button {
-      padding: 10px 20px;
-      margin: 10px;
-      background: red;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: none;
+  outline: none;
+}
 
-    .box {
-      margin-top: 100px;
-    }
-  </style>
+button {
+  width: 100%;
+  padding: 10px;
+  background: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.error {
+  color: orange;
+  margin-top: 10px;
+}
+
+h2 {
+  color: red;
+}
+
+.footer {
+  margin-top: 10px;
+  font-size: 12px;
+  color: gray;
+}
+</style>
 </head>
 
 <body>
 
-<div id="loginPage" class="box">
-  <h2>🔥 Tamdeen Group Login</h2>
+<div class="box">
+  <h2>🔥 Fire Safety Login</h2>
 
   <input id="user" placeholder="User ID">
   <input id="pass" type="password" placeholder="Password">
 
   <button onclick="login()">Login</button>
 
-  <p id="msg"></p>
-</div>
+  <div id="msg" class="error"></div>
 
-<div id="homePage" style="display:none;">
-  <h1>🔥 Tamdeen Group</h1>
-
-  <button onclick="openMall('360')">360 Mall</button>
-  <button onclick="openMall('khiran')">Khiran Mall</button>
-  <button onclick="openMall('alkout')">Al Kout Mall</button>
+  <div class="footer">Made by Bibin</div>
 </div>
 
 <script>
+
 function login() {
+
   let u = document.getElementById("user").value;
   let p = document.getElementById("pass").value;
+  let msg = document.getElementById("msg");
 
-  if (u === "Tamdeen" && p === "T@mdeen123") {
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("homePage").style.display = "block";
-  } else {
-    document.getElementById("msg").innerText = "Wrong Login!";
+  if (u !== "Tamdeen") {
+    msg.innerText = "❌ Wrong Username";
+    return;
   }
+
+  if (p !== "T@mdeen123") {
+    msg.innerText = "❌ Wrong Password";
+    return;
+  }
+
+  localStorage.setItem("user", u);
+
+  window.location.href = "dashboard.html";
 }
 
-function openMall(mall) {
-  localStorage.setItem("mall", mall);
-  window.location.href = "mall.html";
-}
 </script>
 
 </body>
