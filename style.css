@@ -9,54 +9,50 @@ body {
   min-height: 100vh;
 }
 
+.center {
+  text-align: center;
+}
+
 .login-box {
   width: 300px;
   margin: 100px auto;
   padding: 20px;
-  background: rgba(0,0,0,0.7);
   border: 2px solid orange;
-  border-radius: 10px;
   text-align: center;
+  background: rgba(0,0,0,0.7);
 }
 
-.title {
-  color: orange;
-}
-
-input {
-  width: 90%;
+input, button {
   padding: 10px;
-  margin: 10px 0;
+  margin: 5px;
+  width: 90%;
 }
 
 button {
-  padding: 10px 15px;
   background: orange;
   border: none;
   cursor: pointer;
-  font-weight: bold;
-}
-
-.container {
-  text-align: center;
-  padding: 50px;
 }
 
 .card {
-  background: rgba(255, 69, 0, 0.2);
-  margin: 15px auto;
   padding: 20px;
-  width: 200px;
+  margin: 10px;
   border: 2px solid orange;
+  text-align: center;
   cursor: pointer;
-  transition: 0.3s;
 }
 
-.card:hover {
-  background: orange;
-  color: black;
+.tabs button {
+  width: 30%;
 }
 
-.error {
-  color: red;
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+td, th {
+  border: 1px solid orange;
+  padding: 5px;
 }
