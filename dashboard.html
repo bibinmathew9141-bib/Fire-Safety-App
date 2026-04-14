@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard</title>
+
+<style>
+body {
+  background: #000;
+  color: white;
+  font-family: Arial;
+  text-align: center;
+}
+
+.card {
+  background: #111;
+  margin: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px red;
+  cursor: pointer;
+}
+
+.card:hover {
+  box-shadow: 0 0 20px orange;
+}
+
+h2 { color: red; }
+
+.footer {
+  margin-top: 20px;
+  color: gray;
+  font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🔥 Tamdeen Group Dashboard</h2>
+
+<div class="card" onclick="openMall('360 Mall')">360 Mall</div>
+<div class="card" onclick="openMall('Khiran Mall')">Khiran Mall</div>
+<div class="card" onclick="openMall('Al Kout Mall')">Al Kout Mall</div>
+
+<div class="footer">Made by Bibin</div>
+
+<script>
+
+function openMall(mall) {
+  localStorage.setItem("mall", mall);
+  window.location.href = "system.html";
+}
+
+</script>
+
+</body>
+</html>
