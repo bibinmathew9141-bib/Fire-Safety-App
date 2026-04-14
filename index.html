@@ -1,23 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Tamdeen Fire System - Login</title>
+  <title>Login</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="fire-bg">
 
-  <div class="login-box">
-    <h1 class="title">🔥 Tamdeen Group</h1>
-    <h3>Fire Safety Management System</h3>
+<div class="login-box">
+  <h1>🔥 Tamdeen Group</h1>
 
-    <input type="text" id="userid" placeholder="USER ID">
-    <input type="password" id="password" placeholder="PASSWORD">
+  <input id="user" placeholder="USER ID">
+  <input id="pass" type="password" placeholder="PASSWORD">
 
-    <button onclick="login()">Login</button>
+  <button onclick="login()">Login</button>
+  <p id="err"></p>
+</div>
 
-    <p id="error" class="error"></p>
-  </div>
-
-  <script src="app.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
