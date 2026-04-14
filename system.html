@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>System</title>
+<title>System Menu</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -10,44 +10,84 @@ margin:0;
 font-family:Arial;
 background:#0b0f14;
 color:white;
-text-align:center;
 }
 
-h2{
+.header{
+text-align:center;
+padding:15px;
+background:#111827;
 color:#ff4d4d;
-margin-top:20px;
+font-size:18px;
+font-weight:bold;
+}
+
+.container{
+padding:10px;
 }
 
 .card{
-margin:15px auto;
-width:80%;
-padding:20px;
 background:#1f2937;
+margin:10px auto;
+padding:15px;
 border-radius:10px;
+max-width:600px;
 cursor:pointer;
+transition:0.2s;
 }
 
 .card:hover{
 background:#374151;
+}
+
+.small{
+font-size:13px;
+color:#aaa;
 }
 </style>
 </head>
 
 <body>
 
-<h2 id="mall"></h2>
+<div class="header" id="mallName"></div>
 
-<div class="card" onclick="openTable('fire')">Fire Systems</div>
-<div class="card" onclick="openTable('inspection')">Inspection</div>
-<div class="card" onclick="openTable('daily')">Daily Work</div>
+<div class="container">
+
+<div class="card" onclick="openTable('Fire Alarm Panels')">🔥 Fire Alarm Panels</div>
+<div class="card" onclick="openTable('Fire Pumps')">🚒 Fire Pumps</div>
+<div class="card" onclick="openTable('Fire Water Tank')">💧 Fire Water Tank</div>
+<div class="card" onclick="openTable('FM200 Data Room')">🖥 FM200 Data Room</div>
+<div class="card" onclick="openTable('Foam System / Generator')">⚡ Foam System / Generator</div>
+<div class="card" onclick="openTable('Substation LT/HT')">⚡ Substation (LT/HT)</div>
+<div class="card" onclick="openTable('Gas Chamber / Tank')">🧯 Gas Chamber / Tank</div>
+<div class="card" onclick="openTable('Deluge System')">🚨 Deluge System</div>
+<div class="card" onclick="openTable('Fit-outs')">🏗 Fit-outs</div>
+
+<div class="card" onclick="openTable('Inspection')">
+🛡 Inspection's
+<div class="small">(Operational Safety / Fit-out Inspection)</div>
+</div>
+
+<div class="card" onclick="openTable('Daily Visit')">
+📍 Daily Visit Any Floor
+<div class="small">
+Fire Cabinet, Fire Hydrant, Auto Door, Emergency Light,<br>
+BOH, CRIC Exit Light, Electrical, F&B Gas
+</div>
+</div>
+
+<div class="card" onclick="openTable('Additional Jobs')">
+➕ Additional Assigned Jobs
+</div>
+
+</div>
 
 <script>
-document.getElementById("mall").innerText =
-localStorage.getItem("mall");
+document.getElementById("mallName").innerText =
+"🏬 " + localStorage.getItem("mall");
 
 function openTable(system){
 localStorage.setItem("system",system);
-window.location="table.html";
+window.location.href = "table.html";
 }
 </script>
 
